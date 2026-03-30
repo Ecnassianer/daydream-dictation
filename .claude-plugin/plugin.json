@@ -1,0 +1,14 @@
+{
+  "name": "daydream-dictation",
+  "version": "0.1.0",
+  "description": "Voice-driven document authoring with a three-phase workflow: structured daydreaming, interactive engagement, and diff review.",
+  "author": {
+    "name": "Ecnassianer",
+    "url": "https://github.com/Ecnassianer"
+  },
+  "repository": "https://github.com/Ecnassianer/daydream-dictation",
+  "license": "MIT",
+  "keywords": ["dictation", "voice", "design-docs", "daydream"],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}
