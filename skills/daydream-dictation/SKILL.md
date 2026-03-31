@@ -13,19 +13,60 @@ allowed-tools:
 
 # Daydream Dictation — Agent Behavior
 
-This skill defines how you behave during Daydream Dictation sessions.
+This skill defines how you behave during Daydream Dictation sessions. It covers the mechanics you execute — voice parsing, prompt logging, commit discipline, project initialization. It does not contain any information about teaching the user how the process works.
+
+If the user asks questions about the process itself — "what is Phase 1?", "how does this work?", "what should I do next?" — activate the `/dd-teach` skill to handle the explanation.
+
+---
+
+## Quick Reference — The Three Phases
+
+**Phase 1 — Structured Daydreaming.** The user talks out loud about their idea for 20–60 minutes. They don't edit, don't review, and don't look at what you're writing. You capture everything and organize it into the document as you go. Don't ask clarifying questions during this phase — flag open items inline and keep going.
+
+**Phase 2 — Response and Agent Engagement.** The user engages with your replies from Phase 1, top to bottom. They answer your questions, fill in gaps, and add anything that comes up. When they've worked through the list, suggest running `/dd-gap-analysis`. This phase has lower focus requirements.
+
+**Phase 3 — Diff Review.** The user opens the pull request and reads the actual diff. They leave inline comments with feedback; you address them as a batch. When satisfied, they approve and merge.
+
+Phases cycle. After merging, start a new session — the Prompts document captures everything the next session needs.
 
 ---
 
 ## Starting a Session
 
-When the user names a project to work on:
+When the user tells you which project to work on:
 
-1. **Immediately** write the absolute path to that project's folder into `dd-current-dictation-project` at the repo root. Do this before anything else — the file may contain a stale path from a previous session.
-2. Read the **tail** of the companion Prompts document — last 20–30 entries. Do not read the entire file. It can be very long; loading it all wastes context.
-3. Confirm the prompt logging hook is firing by checking whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
+1. **Set the active project immediately** — write the absolute path to the project's **folder** into `dd-current-dictation-project` at the repo root. Do this as your very first action, before anything else. The file may contain a stale path from a previous session.
+2. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
+3. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
 
 If no specific project is active, write an empty string to `dd-current-dictation-project` — prompts will log to `Prompts-ddMetadiscussion` at the repo root.
+
+### The `dd-current-dictation-project` State File
+
+A plain text file at the repo root containing the absolute path to the currently active **project folder** (not the Prompts file). Not tracked by git (listed in `.gitignore`).
+
+The `UserPromptSubmit` hook reads this folder path and dynamically finds the Prompts file inside it. This decouples the state file from the exact Prompts filename.
+
+The file is not automatically cleared between sessions — it persists. Always set it explicitly when the user names a project.
+
+**Important:** `SessionStart` hooks and `UserPromptSubmit`-based clearing have both been tried and cause sessions to hang on startup. `Stop`/`SessionEnd` hooks clear too aggressively (after every response). Manual management is the current approach.
+
+---
+
+## Slash Command — `/daydream-dictation`
+
+**Aliases:** `/daydream-dictation`, `/dictate-daydream`
+
+Runs the session-start workflow:
+
+1. If no project is specified, ask the user which project they're working on
+2. If the project doesn't exist, run `dd_init_project.py` to create it
+3. Set `dd-current-dictation-project` to the project folder path
+4. Read the tail of the Prompts document (last 20–30 entries)
+5. Confirm the prompt logging hook is firing
+6. Tell the user you're ready — briefly remind them of the three phases if this seems like their first time
+
+**With argument:** `/daydream-dictation "My New Project"` — if the project exists, start it; if not, create it first via the script.
 
 ---
 
@@ -41,7 +82,7 @@ Prompts are typically raw voice transcriptions. Parse them as speech, not text:
 
 ### Commonly Confused Words
 
-Check for a `.claude/dd-variants.md` file in the repo. If it exists, it lists words the user's dictation software consistently mis-transcribes. When you see any listed variant in a prompt, silently substitute the correct word.
+Check for variant files in `.claude/` (e.g., `.claude/dd-variants.md`). If found, use them to catch likely transcription errors. The file lists words or phrases the user's dictation software frequently mis-transcribes, along with the correct form. Silently substitute the correct word when you see a listed variant.
 
 ### What You Do During Phase 1
 
@@ -56,12 +97,27 @@ The user is in a creative flow state and will not be reading your responses. You
 
 ---
 
-## Prompt Log Rules
+## The Prompts Document
 
-- **Never delete logged prompts.** The prompt log is a permanent record.
-- **Never move session-opening prompts.** The first prompt of a session (e.g. "I want to work on X") is logged to `Prompts-ddMetadiscussion` by the hook before you set the active project. This is correct — it's metadiscussion, not project content.
-- If a prompt clearly belongs to a different project, move it to that project's Prompts doc — but never delete it.
+Every project has a companion Prompts document (`Prompts-<Slug>.md`) that logs every prompt used during sessions. This is a permanent record.
+
+### Rules
+
+- **Never delete logged prompts**, even if they seem off-topic. If a prompt clearly belongs to a different project, move it — but never delete it.
+- **Record prompts verbatim**, transcription errors and all. The raw wording is part of the record.
+- **Session-opening prompts stay in `Prompts-ddMetadiscussion`** — the hook fires before you set `dd-current-dictation-project`, so the first prompt of any session is logged there. This is correct and intentional. Do not move it into the project's Prompts document.
 - **Co-commit rule:** Prompt log entries belong in the same commit as the document changes they accompany. Do not commit the Prompts doc ahead of the corresponding work.
+
+### Why We Keep It
+
+- **Reconstruction** — clarifies intent when the design doc is ambiguous
+- **Audit trail** — trace any line back to the prompt that produced it
+- **Session continuity** — new sessions read the Prompts doc to understand history
+- **Debugging AI edits** — identifies whether an instruction was ambiguous or misinterpreted
+
+### Backfilling Missed Prompts
+
+If prompts were not captured automatically, add them manually in order. Use the conversation history to reconstruct exact wording. Number sequentially from the last captured entry. Commit with a note that entries were backfilled.
 
 ---
 
@@ -76,7 +132,7 @@ python3 ${CLAUDE_SKILL_DIR}/../../scripts/dd_init_project.py --project-root /pat
 
 The script creates `<Slug>/Daydream-<Slug>.md`, `TODO-<Slug>.md`, `Prompts-<Slug>.md`, sets `dd-current-dictation-project`, and commits.
 
-If the folder already exists, don't re-run the script — just set the active project and start working. Verify `TODO-<Slug>.md` and `Prompts-<Slug>.md` exist alongside the main doc.
+If the folder already exists, don't re-run the script — just set the active project and start working. Verify `Daydream-<Slug>.md`, `TODO-<Slug>.md`, and `Prompts-<Slug>.md` all exist before proceeding.
 
 **Project root resolution:** CLI `--project-root` → `.claude/dd-projects-root` file → repo root.
 
@@ -90,10 +146,11 @@ If the folder already exists, don't re-run the script — just set the active pr
 
 ## Document Conventions
 
-- Placeholder for undocumented items in ordered lists: `**[Item N — not yet documented]**`
-- Working names: `**Name** *(working name)*`
-- Debug/test tools → `DebugTools-<ProjectName>.md`, not the main document
-- To-do items → always add to `TODO-<ProjectName>.md` (canonical list). May also appear inline in the design doc where contextually useful.
+- **Placeholders for undescribed items:** `**[Item N — not yet documented]**`
+- **Working names:** `**Name** *(working name)*`
+- **Debug/test tools** go in a dedicated `DebugTools-<ProjectName>.md` file, not the main document. Create it if needed.
+- **To-do items** always go in `TODO-<ProjectName>.md` (canonical list). May also appear inline where contextually useful.
+- **Per-project instructions** can be placed in a `CLAUDE.md` inside the project folder (e.g., `Campfire/CLAUDE.md`). Use this for project-specific rules like localization requirements.
 
 ---
 
@@ -103,6 +160,7 @@ If the folder already exists, don't re-run the script — just set the active pr
 - Push to the active branch immediately after committing
 - Daydream doc and Prompts doc committed together when both change in the same turn
 - Prompt log entries belong in the same commit as the work they accompany
+- The Stop hook will warn if there are uncommitted or unpushed changes
 
 ---
 
@@ -120,13 +178,33 @@ When the user says to switch projects:
 
 When the user says "address the comments on the PR" or similar:
 
-- **Simple changes** (word substitutions, small fixes, clear directives): make the edit, commit, reply "Done." on the PR comment. No explanation needed.
+- **Simple changes** (word substitutions, small fixes, clear directives): make the edit, commit, reply "Done." on the PR comment.
 - **Complex comments** (questions, design discussions, ambiguous requests): reply on the PR with a question or proposed approach. Wait for user response before making changes.
 
 ---
 
-## The `dd-` Prefix Convention
+## Version Control
 
-Any file or artifact that lives outside a project folder and is part of the Daydream Dictation system must be prefixed with `dd-`. This distinguishes plugin infrastructure from the user's work.
+Version control is **required**. The diff review phase depends on being able to see before/after. If the user doesn't have VCS set up, walk them through setting up Git before proceeding.
 
-Exception: `Prompts-ddMetadiscussion` — the `Prompts-` prefix wins because its identity is as a Prompts document first.
+### Supported VCS
+
+- `git` — full support; first-class default
+- `hg` — Mercurial
+- `perforce` (alias: `p4`) — Perforce
+- `unity-vcs` (alias: `plastic`) — Unity Version Control / Plastic SCM
+- `custom` — unsupported VCS; manage checkpoints conversationally
+
+### Detection Order (first match wins)
+
+1. `.claude/dd-vcs` file — user-supplied override
+2. Auto-detection: `.git/` → git; `.hg/` → hg; `.plastic/` → unity-vcs; `.p4config` or `P4CONFIG` env var → perforce
+3. Nothing detected → ask the user; if they don't know, walk them through setting up Git
+
+---
+
+## The `dd-` Naming Prefix
+
+Any file or artifact that lives outside a project folder and is part of the Daydream Dictation system must be prefixed with `dd-`. This distinguishes skill infrastructure from the user's work.
+
+**Exception:** `Prompts-ddMetadiscussion` — the `Prompts-` prefix wins because its identity is as a Prompts document first.

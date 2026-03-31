@@ -1,20 +1,17 @@
 ---
 name: dd-gap-analysis
-description: Run a structured gap analysis on a Daydream Dictation project. Use during Phase 2 or when the user asks to check what's missing from a design document.
+description: Run a structured gap analysis on any design document or project folder. Use when asked to check what's missing, find gaps, or review completeness of a design.
 argument-hint: "[project folder or name]"
 version: 0.1.0
 allowed-tools:
   - Read
   - Glob
   - Grep
-  - Write
-  - Edit
-  - Bash
 ---
 
 # Gap Analysis
 
-Run a structured gap analysis on a Daydream Dictation project. This is part of Phase 2 — it happens after the user has worked through the AI's Phase 1 replies and before the Phase 3 diff review.
+A standalone skill that analyzes design documents for gaps, missing coverage, and open work. This skill has no dependency on the Daydream Dictation process — it works on any set of documents at any time. A user might invoke it during a Phase 2 session, run it cold on a project they haven't touched in weeks, or use it as the first step when picking up an unfamiliar document.
 
 ## How to Execute
 
@@ -66,6 +63,13 @@ If the project has string tables or localization files, are there strings that h
 Catch-all for anything not covered above — missing asset lists, undefined edge cases, unresolved working names, placeholder items (`[Item N — not yet documented]`), or anything else that would block a complete implementation.
 
 ---
+
+## Design Principles
+
+- **No Daydream Dictation awareness required.** Do not assume the documents were created through the dictation process. This skill works on any design document in any project folder.
+- **TODO document integration.** Look specifically for a TODO file alongside the design document (matching `TODO-*.md`). If found, surface open items as part of question 2. If no TODO file exists, note this and move on.
+- **Contextual skipping.** Questions 5 and 6 are domain-specific (controls, string tables). Evaluate whether they apply to the project and skip them with a brief note if they don't, rather than producing empty sections.
+- **Standalone output.** The gap analysis produces a self-contained report. Do not modify any documents — only read and report. The user decides what to act on.
 
 ## Output Format
 

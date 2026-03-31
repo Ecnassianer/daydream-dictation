@@ -1,12 +1,14 @@
 ---
 name: dd-teach
-description: Explains the Daydream Dictation process to users. Activates when the user asks how to use Daydream Dictation, asks about the three phases, wants tips for dictation sessions, or asks what they should be doing.
+description: Explains the Daydream Dictation process to users. Activates when the user asks how to use Daydream Dictation, asks about the three phases, wants tips for dictation sessions, asks what they should be doing, or needs help with version control during the review cycle.
 version: 0.1.0
 ---
 
 # Teach Daydream Dictation
 
-Use this skill when the user asks how the Daydream Dictation process works, what they should be doing, or wants guidance on any of the three phases. Tailor your explanation to the user's experience level and what they're currently struggling with — don't dump the entire process on them at once.
+A guided onboarding skill that teaches users how to use the Daydream Dictation process. Rather than expecting the user to read documentation, explain the workflow interactively — contextualized to the user's experience level and current situation.
+
+This skill is not a linear tutorial. Respond to what the user asks and where they're stuck. A user who already knows git gets a very different explanation than someone who has never used version control. Don't dump the entire process on them at once.
 
 ---
 
@@ -122,6 +124,22 @@ When the user asks about when to end or start sessions:
 - Mid-phase and context is still clean
 
 The end of Phase 3, right after merging, is almost always a good time to close. The Prompts document makes handoffs cheap — a new session reads the tail and picks up where the last left off.
+
+---
+
+## Version Control for the Review Cycle
+
+When the user needs help understanding version control as it relates to Phase 3:
+
+- **What a pull request is** — a way to see all the changes from a session collected in one place, with a before/after view
+- **How to open a PR** — the AI creates PRs during the session; show the user the URL
+- **How to read a diff** — green = added, red = removed. They only need to read what changed, not the whole document
+- **How to leave comments** — inline comments on the diff are the feedback mechanism
+- **How to approve and merge** — the final step that makes changes permanent
+- **What happens if they don't merge** — work isn't lost (it's on a branch) but it won't be in the main document until merged
+- **Branches** — each session typically works on a branch; merging brings it into main
+
+Calibrate the depth of explanation to the user. A developer needs almost none of this. Someone who has never used git needs all of it, step by step.
 
 ---
 
