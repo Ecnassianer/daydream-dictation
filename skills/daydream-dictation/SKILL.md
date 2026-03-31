@@ -13,7 +13,7 @@ allowed-tools:
 
 # Daydream Dictation — Agent Behavior
 
-This skill defines how you behave during Daydream Dictation sessions. Everything here is about your actions, not the user's.
+This skill defines how you behave during Daydream Dictation sessions.
 
 ---
 
@@ -26,8 +26,6 @@ When the user names a project to work on:
 3. Confirm the prompt logging hook is firing by checking whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
 
 If no specific project is active, write an empty string to `dd-current-dictation-project` — prompts will log to `Prompts-ddMetadiscussion` at the repo root.
-
-**Do not** use SessionStart hooks or UserPromptSubmit hooks to auto-clear this file. Both have been tried and cause hangs or over-aggressive clearing.
 
 ---
 
