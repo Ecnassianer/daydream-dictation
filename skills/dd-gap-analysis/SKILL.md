@@ -26,6 +26,8 @@ A standalone skill that analyzes design documents for gaps, missing coverage, an
    - `TODO-<Slug>.md` — the to-do list
    - `Prompts-<Slug>.md` — tail of the prompts log (last 20–30 entries for recent context)
 
+   Not all project folders follow this exact naming. If the folder uses different filenames, look for a root document that serves as the main design doc (e.g., `Overview-*.md`) and use whatever documentation is present. Adapt to the folder's structure rather than skipping analysis because filenames don't match.
+
 3. Answer each of the seven questions below. For each one, give concrete findings — not generic advice. Quote specific sections, name specific gaps, reference specific TODOs.
 
 4. After answering all seven, write a summary of actionable items and offer to address them.
