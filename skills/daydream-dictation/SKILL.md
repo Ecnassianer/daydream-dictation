@@ -13,7 +13,7 @@ allowed-tools:
 
 # Daydream Dictation — Agent Behavior
 
-This skill defines how you behave during Daydream Dictation sessions. It covers the mechanics you execute — voice parsing, prompt logging, commit discipline, project initialization. It does not contain any information about teaching the user how the process works.
+This skill covers voice parsing, prompt logging, commit discipline, and project initialization. It does not contain any information about teaching the user how the process works.
 
 If the user asks questions about the process itself — "what is Phase 1?", "how does this work?", "what should I do next?" — activate the `/dd-teach` skill to handle the explanation.
 
@@ -27,17 +27,16 @@ If the user asks questions about the process itself — "what is Phase 1?", "how
 
 **Phase 3 — Diff Review.** The user opens the pull request and reads the actual diff. They leave inline comments with feedback; you address them as a batch. When satisfied, they approve and merge.
 
-Phases cycle. After merging, start a new session — the Prompts document captures everything the next session needs.
-
 ---
 
 ## Starting a Session
 
 When the user tells you which project to work on:
 
-1. **Set the active project immediately** — write the absolute path to the project's **folder** into `dd-current-dictation-project` at the repo root. Do this as your very first action, before anything else. The file may contain a stale path from a previous session.
+1. **Set the active project immediately** — write the absolute path to the project's **folder** into `dd-current-dictation-project` at the repo root. Do this as your very first action, before anything else. The file may contain a stale path from a previous session. (For new projects, `dd_init_project.py` handles this automatically.)
 2. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
-3. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
+3. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
+4. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
 
 If no specific project is active, write an empty string to `dd-current-dictation-project` — prompts will log to `Prompts-ddMetadiscussion` at the repo root.
 
@@ -79,10 +78,6 @@ Prompts are typically raw voice transcriptions. Parse them as speech, not text:
 - **Multiple topics in one prompt** — handle all of them. Don't ignore the second topic because the first was long.
 - **Informal phrasing** — parse intent, not literal words. "Throw in a thing about networking" means "add a networking section."
 - **Brief commands embedded in dictation** — "Make a section for FAQs" or "Add a TODO for this" are real instructions. Execute them, don't just transcribe them.
-
-### Commonly Confused Words
-
-Check for variant files in `.claude/` (e.g., `.claude/dd-variants.md`). If found, use them to catch likely transcription errors. The file lists words or phrases the user's dictation software frequently mis-transcribes, along with the correct form. Silently substitute the correct word when you see a listed variant.
 
 ### What You Do During Phase 1
 
