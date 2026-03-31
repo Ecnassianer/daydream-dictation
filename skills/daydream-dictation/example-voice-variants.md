@@ -1,8 +1,6 @@
 # Voice Dictation Variants — Example Template
 
-This file shows the format for listing words your voice dictation software commonly confuses. Create your own file at `.claude/dd-variants.md` in your repository root. Claude will check it during dictation sessions and silently substitute the correct word when it sees a listed variant.
-
-You can also create multiple files matching `.claude/dd-*.md` if you want to organize variants by topic.
+This file shows the format for listing words your voice dictation software commonly confuses. Create your own file at `.claude/dd-voice-variants.md` in your repository root. The agent will check it during dictation sessions and silently substitute the correct word when it sees a listed variant.
 
 ## Format
 
