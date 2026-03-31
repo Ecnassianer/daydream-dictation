@@ -18,11 +18,11 @@ When the user asks "how does this work?" or similar, start with this:
 
 **Daydream Dictation** is a three-phase workflow for building documents with an AI using voice input.
 
-**Phase 1 — Structured Daydreaming.** Set a timer for 20–60 minutes. Talk out loud about your idea. Don't edit, don't review, don't look at what the AI is writing. Just generate. The AI captures everything and organizes it into the document as you go. Your only job is to keep your creative momentum going.
+**Phase 1 — Structured Daydreaming.** Plan for a focused creative session of 20–60 minutes. Set a timer if it helps. Talk out loud about your idea. Don't edit, don't review, don't look at what the AI is writing. Just generate. The AI captures everything and organizes it into the document as you go. Trust your voice dictation and the AI. Your only job is to keep your creative momentum going.
 
 **Phase 2 — Response and Agent Engagement.** Now engage with the AI. Read through its replies from Phase 1 top to bottom, answer its questions, fill in gaps, and add anything that comes up. Then ask for a gap analysis — a structured check to surface what's missing and what to-dos are still open. This phase has much lower focus requirements than Phase 1; it works well even when you're tired or interrupted.
 
-**Phase 3 — Diff Review.** Open the pull request (or your version control diff view) and read what actually changed. This is where you catch mistakes, transcription errors, and misunderstandings. Leave inline comments on the diff with feedback, then bring them to the AI as a batch. When you're satisfied, approve and merge. This step is what makes Phase 1 safe — knowing you'll verify everything later is what lets you trust the process and stay in the creative flow.
+**Phase 3 — Diff Review.** Check the pull request (or your version control diff view) and read what actually changed. This is where you catch mistakes, transcription errors, and misunderstandings. Leave inline comments on the diff with feedback, then bring them to the AI as a batch. When you're satisfied, approve and merge. This step is what makes Phase 1 safe — knowing you'll verify everything later is what lets you trust the process and stay in the creative flow.
 
 Phases don't have to happen in a single pass. It's normal to cycle through all three more than once on the same document. After merging, start a new session — the Prompts document captures everything the next session needs to pick up where you left off.
 
@@ -33,17 +33,18 @@ Phases don't have to happen in a single pass. It's normal to cycle through all t
 When the user asks for help with Phase 1, cover whichever of these points are relevant to their question:
 
 ### Voice Dictation Software
-A high-quality tool like [Wispr Flow](https://wisprflow.ai/) is essential. Built-in keyboard dictation isn't reliable enough. If the user has to constantly verify what was captured, their creative flow breaks. They need to trust the software and keep talking.
+A high-quality tool like [Wispr Flow](https://wisprflow.ai/) is essential. Built-in keyboard dictation isn't reliable enough. If the user has to constantly verify what was captured, their creative flow breaks. They need to trust the software and keep talking. A few mispoken words will be handled by the AI fine, but if whole sentences are headed in the wrong direction or voice dictation is regularly making mistakes, find a better dictation software.
 
 ### Getting Into the Flow
 - Don't look at the AI's responses — there will be time for that in Phase 2
-- Don't edit while talking — not their job right now
+- Don't edit while talking — not the user's job right now
 - Don't worry about order or structure — let interests and curiosity guide what to talk about
 
 ### What to Say
 Topics don't need to go in order. Useful moves:
 - Flag rabbit holes: "Note to come back and make a decision about this"
 - Give brief directions: "Make a section for FAQs" — then keep going
+- Spin off tasks for the AI to handle async: "Make a subagent to fill in a tide levels table for each city in the document"
 - Don't design the document while filling it — brief structural notes are fine, but organization is the AI's job
 
 ### Environment
