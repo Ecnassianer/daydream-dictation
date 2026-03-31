@@ -50,7 +50,7 @@ Beyond what's missing — where does the existing design feel unclear, inconsist
 
 ### 4. What will the implementing agent need to know?
 
-Identify anything that an agent picking up this design document would find ambiguous or underspecified. What decisions would they have to make on their own because the document doesn't answer them?
+Identify anything that an agent picking up this design document would find ambiguous or underspecified. What decisions would they have to make on their own because the document doesn't answer them? If the project has a `TechDesign-<Slug>.md`, check whether it covers the technical decisions needed to implement the design. If no TDD exists and the project has enough technical complexity to warrant one, note that.
 
 ### 5. Are there missing control definitions?
 
@@ -58,7 +58,7 @@ For any interactive or playable system: are the player controls fully defined? A
 
 ### 6. Are there untranslated strings?
 
-If the project has string tables or localization files, are there strings that have not yet been translated? If so, ask: should translation happen now, or is it deferred?  Skip this question if the project has no localization.
+If the project has a `StringTable-<Slug>.md` or other localization files, check for completeness: are there strings missing translations for any supported language? Are there strings referenced in the design doc that don't have string table entries? If gaps exist, ask: should translation happen now, or is it deferred? Skip this question if the project has no localization.
 
 ### 7. Are there any other gaps?
 
