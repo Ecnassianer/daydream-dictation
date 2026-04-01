@@ -53,25 +53,32 @@ def run(cmd: list[str], cwd: str, fatal: bool = True) -> subprocess.CompletedPro
 # Repo root detection
 # ---------------------------------------------------------------------------
 
+def _try_run(cmd: list[str]) -> subprocess.CompletedProcess | None:
+    """Run a command, returning None if the executable is not found."""
+    try:
+        return subprocess.run(cmd, capture_output=True, text=True)
+    except FileNotFoundError:
+        return None
+
+
 def find_repo_root() -> str:
     """Find the VCS repo root, trying each supported system in order."""
-    r = subprocess.run(["git", "rev-parse", "--show-toplevel"],
-                       capture_output=True, text=True)
-    if r.returncode == 0:
+    r = _try_run(["git", "rev-parse", "--show-toplevel"])
+    if r and r.returncode == 0:
         return r.stdout.strip()
 
-    r = subprocess.run(["hg", "root"], capture_output=True, text=True)
-    if r.returncode == 0:
+    r = _try_run(["hg", "root"])
+    if r and r.returncode == 0:
         return r.stdout.strip()
 
-    r = subprocess.run(["p4", "info"], capture_output=True, text=True)
-    if r.returncode == 0:
+    r = _try_run(["p4", "info"])
+    if r and r.returncode == 0:
         for line in r.stdout.splitlines():
             if line.lower().startswith("client root:"):
                 return line.split(":", 1)[1].strip()
 
-    r = subprocess.run(["cm", "workspace", "list"], capture_output=True, text=True)
-    if r.returncode == 0:
+    r = _try_run(["cm", "workspace", "list"])
+    if r and r.returncode == 0:
         return os.getcwd()
 
     return os.getcwd()

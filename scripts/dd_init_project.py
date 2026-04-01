@@ -109,7 +109,7 @@ def main() -> None:
     current_project_path = os.path.join(repo_root, "dd-current-dictation-project")
     with open(current_project_path, "w", encoding="utf-8") as f:
         f.write(project_dir)
-    print(f"\n  Set dd-current-dictation-project → {project_dir}")
+    print(f"\n  Set dd-current-dictation-project -> {project_dir}")
 
     commit_msg = (f"Initialize {full_name} project\n\n"
                   f"Creates Daydream, TODO, and Prompts documents for {slug}.")

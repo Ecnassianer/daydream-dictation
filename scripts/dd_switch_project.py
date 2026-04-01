@@ -35,7 +35,7 @@ def main() -> None:
         current_project_path = os.path.join(repo_root, "dd-current-dictation-project")
         with open(current_project_path, "w", encoding="utf-8") as f:
             f.write("")
-        print("Cleared dd-current-dictation-project (prompts → Prompts-ddMetadiscussion)")
+        print("Cleared dd-current-dictation-project (prompts -> Prompts-ddMetadiscussion)")
         return
 
     name = " ".join(args).strip()
@@ -63,7 +63,7 @@ def main() -> None:
     with open(current_project_path, "w", encoding="utf-8") as f:
         f.write(project_dir)
     print(f"Switched to: {slug}")
-    print(f"  dd-current-dictation-project → {project_dir}")
+    print(f"  dd-current-dictation-project -> {project_dir}")
 
 
 if __name__ == "__main__":
