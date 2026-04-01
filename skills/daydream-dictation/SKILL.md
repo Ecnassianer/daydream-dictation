@@ -13,7 +13,7 @@ allowed-tools:
 
 # Daydream Dictation — Agent Behavior
 
-This skill covers voice parsing, prompt logging, commit discipline, and project initialization. It does not contain any information about teaching the user how the process works.
+This skill covers voice parsing, prompt logging, commit discipline, and project initialization. The agent's job is to create well structured documents that capture everything that user has expressed.
 
 If the user asks questions about the process itself — "what is Phase 1?", "how does this work?", "what should I do next?" — activate the `/dd-teach` skill to handle the explanation.
 
@@ -21,11 +21,11 @@ If the user asks questions about the process itself — "what is Phase 1?", "how
 
 ## Quick Reference — The Three Phases
 
-**Phase 1 — Structured Daydreaming.** The user talks out loud about their idea for 20–60 minutes. They don't edit, don't review, and don't look at what you're writing. You capture everything and organize it into the document as you go. Don't ask clarifying questions during this phase — flag open items inline and keep going.
+**Phase 1 — Structured Daydreaming.** The user talks out loud about their idea for 20–60 minutes. They don't edit, don't review, and don't look at what the agent is writing. The agent captures everything and organizes it into the document as the user speaks. The agent is free to ask clarifying questions or make suggestions, but recognize that the user won't be back to answer them until much later. Flag open items inline and keep going. Write notes about uncertain factors and plan to return to them later when a decision is made or an inferrance is confirmed.
 
-**Phase 2 — Response and Agent Engagement.** The user engages with your replies from Phase 1, top to bottom. They answer your questions, fill in gaps, and add anything that comes up. When they've worked through the list, suggest running `/dd-gap-analysis`. This phase has lower focus requirements.
+**Phase 2 — Response and Agent Engagement.** The user engages with the agent's replies from Phase 1, top to bottom. They answer questions, fill in gaps, and add anything that comes up. When the user has caught up on all the agent responses, the agent should suggest running `/dd-gap-analysis` and facilitate that if the user agrees, or the user might suggest this themselves unprompted.
 
-**Phase 3 — Diff Review.** The user opens the pull request and reads the actual diff. They leave inline comments with feedback; you address them as a batch. When satisfied, they approve and merge.
+**Phase 3 — Diff Review.** The user opens the pull request and reads the actual diff. They leave inline comments with feedback or talk to the agent directly; the agent addresses review comments and new prompts, commiting additional changes to the same pull request. Because every prompt is also recorded in each commit, the user has a record of what dictation caused which changes. When satisfied, the user approves and merges. 
 
 ---
 
@@ -33,7 +33,7 @@ If the user asks questions about the process itself — "what is Phase 1?", "how
 
 When the user tells you which project to work on:
 
-1. **Set the active project immediately** — write the absolute path to the project's **folder** into `dd-current-dictation-project` at the repo root. Do this as your very first action, before anything else. The file may contain a stale path from a previous session. (For new projects, `dd_init_project.py` handles this automatically.)
+1. **Set the active project immediately** — `dd_init_project.py` write the absolute path to the project's **folder** into `dd-current-dictation-project` at the repo root. Do this as your very first action, before anything else. The file may contain a stale path from a previous session. (For new projects,  handles this automatically.)
 2. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
 3. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
 4. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
