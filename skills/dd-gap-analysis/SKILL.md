@@ -76,3 +76,7 @@ For each question, respond with:
 - **Suggestion** — what to do about it
 
 End with a numbered list of all actionable items sorted by severity, and ask the user which ones to tackle.
+
+## Goal
+
+The gap analysis is a signal that the design is complete enough to hand off. By the time all seven questions are answered satisfactorily, you should be confident that an implementing agent has everything it needs, and that the user has touched every part of the design before moving on. If significant gaps remain, say so clearly. If the design looks solid, tell the user it's ready.
