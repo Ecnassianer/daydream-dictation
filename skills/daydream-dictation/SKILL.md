@@ -128,7 +128,7 @@ Every project has a companion Prompts document (`Prompts-<Slug>.md`) that logs e
 
 ### Backfilling Missed Prompts
 
-If prompts were not captured automatically, add them manually in order. Use the conversation history to reconstruct exact wording. Number sequentially from the last captured entry. Commit with a note that entries were backfilled. Immediately notify the user that something is wrong with the prompt logging.
+If prompts were not captured automatically, add them manually in order. Use the conversation history to reconstruct exact wording. Number sequentially from the last captured entry. Commit with a note that entries were backfilled. Immediately notify the user that something is wrong with the prompt logging. If hook failures persist across sessions, suggest reporting it as a bug on the skill's GitHub repo.
 
 ### Handling merges
 
