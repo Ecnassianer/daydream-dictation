@@ -22,17 +22,31 @@ Use `/dd-teach` to learn the process interactively, tailored to your experience 
 
 ### Install the plugin
 
-Clone the repo and note the path:
+Clone the repo:
 
 ```bash
 git clone https://github.com/Ecnassianer/daydream-dictation.git
 ```
 
-Then in Claude Code, install it as a local plugin:
+Then add it to your Claude Code settings. Edit `~/.claude/settings.json` (or `.claude/settings.json` in your project):
 
+```json
+{
+  "extraKnownMarketplaces": {
+    "local-plugins": {
+      "source": {
+        "source": "directory",
+        "path": "/absolute/path/to/daydream-dictation"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "daydream-dictation@local-plugins": true
+  }
+}
 ```
-/plugin install /path/to/daydream-dictation
-```
+
+Replace `/absolute/path/to/daydream-dictation` with the actual path where you cloned the repo. Restart Claude Code to load the plugin.
 
 ## Usage
 
