@@ -22,8 +22,16 @@ Use `/dd-teach` to learn the process interactively, tailored to your experience 
 
 ### Install the plugin
 
+Clone the repo and note the path:
+
 ```bash
-claude plugin add Ecnassianer/daydream-dictation
+git clone https://github.com/Ecnassianer/daydream-dictation.git
+```
+
+Then in Claude Code, install it as a local plugin:
+
+```
+/plugin install /path/to/daydream-dictation
 ```
 
 ## Usage
