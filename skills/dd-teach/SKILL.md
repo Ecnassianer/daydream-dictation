@@ -28,7 +28,7 @@ Phases don't have to happen in a single pass. It's normal to cycle through all t
 
 ---
 
-## Phase 1 Guidance
+## Phase 1 Guidance 
 
 When the user asks for help with Phase 1, cover whichever of these points are relevant to their question:
 
@@ -36,9 +36,9 @@ When the user asks for help with Phase 1, cover whichever of these points are re
 A high-quality tool like [Wispr Flow](https://wisprflow.ai/) is essential. Built-in keyboard dictation isn't reliable enough. If the user has to constantly verify what was captured, their creative flow breaks. They need to trust the software and keep talking. A few mispoken words will be handled by the AI fine, but if whole sentences are headed in the wrong direction or voice dictation is regularly making mistakes, find a better dictation software.
 
 ### Getting Into the Flow
-- Don't look at the AI's responses — there will be time for that in Phase 2
-- Don't edit while talking — not the user's job right now
-- Don't worry about order or structure — let interests and curiosity guide what to talk about
+- **Don't look at the AI's responses** — there will be time for that in Phase 2
+- **Don't edit while talking** — not the user's job right now
+- **Don't worry about order or structure** — let interests and curiosity guide what to talk about. The AI handles organization.
 
 ### What to Say
 Topics don't need to go in order. Useful moves:
@@ -47,14 +47,16 @@ Topics don't need to go in order. Useful moves:
 - Spin off tasks for the AI to handle async: "Make a subagent to fill in a tide levels table for each city in the document"
 - Don't design the document while filling it — brief structural notes are fine, but organization is the AI's job
 
-### Environment
-- Somewhere free from distractions — outside walking, a park, near the ocean, or a quiet room
+### Environment and Body Position
+- Somewhere free from distractions — **outside walking**, **a park**, **near the ocean**, or **a quiet room**
 - Physical position matters: seated, pacing, walking all work. Follow what the body wants
 - Protect the creative window — a single interruption costs 5–10 minutes of re-entry
 - Phase 1 works especially well from a smartphone — treat the device as a microphone, not a productivity station
 
 ### Keep Eyes Off the Screen
 Look at the sky, the room, the world — anywhere but the screen. The AI's responses are not for the user right now; reading them pulls out of the creative headspace into analytical mode. If struggling, try closing eyes entirely while dictating.
+
+Let the mind disengage from the recording process and stay in **generative thought**.
 
 If absolutely necessary, record prompts in a separate document and paste them in as a batch. This is a last resort — it breaks the natural commit sequence and makes Phase 3 review harder. But it's valid for buffering thoughts when rate-limited or unable to focus.
 
@@ -71,7 +73,9 @@ When the user asks for help with Phase 2:
 Begin at the top of the AI's replies from Phase 1 and work down. Address questions, fill gaps, add details. If something sparks a new idea, add it. Work through the whole list before asking for the gap analysis.
 
 ### Gap Analysis
-Once all Phase 1 replies are addressed, ask for a gap analysis. The AI examines what's been built and surfaces missing sections, unanswered questions, thin coverage, and open to-dos. Use `/dd-gap-analysis` to run it.
+Once all Phase 1 replies are addressed, ask for a gap analysis. The AI examines what's been built and surfaces missing sections, unanswered questions, thin coverage, and open to-dos. Or use `/dd-gap-analysis` to run it. 
+
+After addressing the gap analysis, try running it again.
 
 ### Environment
 Phase 2 has much lower focus requirements. If tired, low on energy, or no longer in a creative setting — that's a good time for Phase 2. Getting off the couch and sitting at a desk can help shift into the more methodical mindset Phase 2 benefits from.
@@ -103,7 +107,7 @@ If the user is unfamiliar with diffs or version control, walk them through it st
 The Prompts document is the reference for understanding what caused any change.
 
 ### Leaving Feedback
-Leave inline comments on the diff, then tell the AI: "Go address the comments on the PR." After the AI makes corrections, jump to the most recent commits to verify fixes.
+Leave inline comments on the diff, then tell the AI: "Go address the comments on the PR." Or give the AI feedback directly. After the AI makes corrections, jump to the most recent commits to verify fixes.
 
 ### Approve and Merge
 When satisfied, approve and merge the pull request. Don't skip this — without a merge, work can appear lost. If the user feels lost with version control, guide them through it.
@@ -115,17 +119,22 @@ When satisfied, approve and merge the pull request. Don't skip this — without 
 When the user asks about when to end or start sessions:
 
 **Good signals to start a new session:**
-- Completed a full phase cycle and the document is stable
+- Completed a full 3 phase cycle and the document is stable
 - Switching to a different project or topic
 - Session feels slow or responses less sharp
 - Just merged a PR — all important context is in the documents
 
 **When to stay:**
-- A single objective spans several phase cycles
+- A single objective spans several phase cycles and will be reviewed/merged together
 - Mid-phase and context is still clean
 
 The end of Phase 3, right after merging, is almost always a good time to close. The Prompts document makes handoffs cheap — a new session reads the tail and picks up where the last left off.
 
+## Cycling Through Phases
+
+The phases are not a single linear pass. It's normal to cycle multiple times. What matters is keeping each phase distinct — don't blur them. When in Phase 1, stay in Phase 1. The discipline of the phases is the point. 
+- **Reviewing while generating breaks creativity.**
+- **Generating while reviewing disrupts the methodical precision.**
 ---
 
 ## Version Control for the Review Cycle
@@ -139,11 +148,9 @@ When the user needs help understanding version control as it relates to Phase 3:
 - **How to approve and merge** — the final step that makes changes permanent
 - **What happens if they don't merge** — work isn't lost (it's on a branch) but it won't be in the main document until merged
 - **Branches** — each session typically works on a branch; merging brings it into main
+- **Ask the agent for help** - the AI is an expert in version control, tell it what you want to happen
 
 Calibrate the depth of explanation to the user. A developer needs almost none of this. Someone who has never used git needs all of it, step by step.
 
 ---
 
-## Cycling Through Phases
-
-The phases are not a single linear pass. It's normal to cycle multiple times. What matters is keeping each phase distinct — don't blur them. When in Phase 1, stay in Phase 1. The discipline of the phases is the point.
