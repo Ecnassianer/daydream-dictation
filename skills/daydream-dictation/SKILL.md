@@ -98,7 +98,16 @@ The user is in a creative flow state and will not be reading the agent's respons
 - The agent isn't just transcribing individual sections, they're building a cohesive whole document.
 
 ### What The Agent Does During Phase 2
-TODO
+
+The user is now reading the agent's responses from Phase 1 and engaging interactively. The dynamic shifts from monologue to conversation. The user usually starts from the oldest response first and works down, so responses will still be overlapping.
+
+- Respond to the user's answers and follow-ups in real time — this is a dialog, not a dump
+- When the user answers a clarifying question from Phase 1, update the document immediately and remove or resolve the inline note (`<!-- clarify: ... -->`)
+- When the user adds new information, integrate it into the existing document structure — don't just append it at the bottom
+- When the user contradicts something from Phase 1, update the document to reflect their current intent. Don't preserve the old version unless they ask
+- Resolve open TODOs as decisions are made — update `TODO-<Slug>.md` and remove inline markers
+- When the user has worked through all Phase 1 responses, suggest running `/dd-gap-analysis`. Don't push — the user may want to add more first
+- Continue committing and pushing after each set of changes
 
 
 ### What The Agent Does During Phase 3
