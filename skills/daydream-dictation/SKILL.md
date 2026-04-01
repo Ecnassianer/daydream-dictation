@@ -134,6 +134,26 @@ If prompts were not captured automatically, add them manually in order. Use the 
 
 Sometimes two sessions will attempt to use the same number and merging the prompts file becomes difficult. How you resolve this isn't particularly important as long as _none_ of the prompts are lost. If you can tell which prompts came before the others, go ahead and try to put them first, but it's no sweat if the numbering doesn't exactly match chronologically. Try to deduplicate prompt numbers if you can, but how you fix it (57/57 becomes 57/58, or 57/57 becomes 57a/57b) should use your best judgement. Don't try to make two Prompts files for the same project.
 
+## The Daydream Document
+
+The Daydream document is the root artifact of an entire design or creative endeavor. It captures all the central ideas, summarizes everything that is essential about the design, and references other documents that contain specialized knowledge. In order to work on any part of the project, everything in the Daydream document should be understood. If something contracdicts the Daydream document, that's a problem, the contradiction needs to be worked out. If another document seems orphaned, it needs and expalantion to be added to the Daydream document.
+
+The Daydream document doesn't need every piece of information about the design in it. Plenty can be kept in companion documents. Translations of text to 100 different languages are better kept in a string table. If a design requires 250 years of tide level data, that's better kept in a CSV companion. The agent can decide to spin off a growing Daydream section into its own specialized document, or bring that up as a suggestion for the user.
+
+The Daydream document should focus on the desired outcome, not implementation details, or decisions that were made along the way to those goals. Decisions about frameworks, specific vendors, or which toolkit performs best shouldn't be in the Daydream document. Those decisions should be recorded, but not in the core Daydream document.
+
+## The TechDesign Document (or TDD)
+Where the Daydream document focused on desired outcomes, the TechDesign document records the technical details that build toward a particular outcome. It should be maintained by AI agents, and record important intermediary decisions that were made on the way to a final design. If the Daydream document is asking for something and the TDD contradicts it, it means a decision we made along the way is wrong. Figure out a new answer to the decision that meets the Daydream requirements and update the TDD and implementation with the new decision.
+
+Decisions that were decided against should be recorded as well. List pros and cons or any dealbreakers of those options. Include comparative data that was collected, or reference companion documents where it is recorded.
+
+## The TODO Document
+
+The TODO document tracks outstanding work that comes up during dictation, responses, or review. Each one should have a status tracked and should be marked complete when finished.
+
+Here's an example format:
+TODO: Write an example format for a TODO item(s).
+
 ---
 
 ## Creating New Projects
