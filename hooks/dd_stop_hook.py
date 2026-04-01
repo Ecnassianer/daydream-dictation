@@ -3,9 +3,13 @@
 dd_stop_hook.py — Stop hook for Daydream Dictation.
 
 Fires when a session ends or Claude finishes responding. Checks for
-uncommitted changes, untracked files, and unpushed commits. Exits with
-code 2 and a descriptive error message if any are found, prompting the
-user (or Claude) to commit and push before closing.
+uncommitted changes, untracked files, and unpushed commits.
+
+Exit codes:
+  0 — repo is clean; Claude is allowed to stop.
+  2 — violations found; blocks Claude from stopping. The stderr message
+      is fed back to Claude, which is expected to commit/push and retry.
+      (Exit code 2 is the Claude Code convention for "blocking error".)
 
 Supports multiple VCS backends via dd_lib.detect_vcs().
 """
