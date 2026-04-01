@@ -146,21 +146,26 @@ The Daydream document doesn't need every piece of information about the design i
 
 ## The TODO Document
 
-The TODO document tracks outstanding work that comes up during dictation, responses, or review. Each one should have a status tracked and should be marked complete when finished.
+The TODO document (`TODO-<Slug>.md`) tracks outstanding work that comes up during dictation, responses, or review. Each item should have a status and should be marked complete when finished. The TODO document is the canonical list — inline references in the Daydream doc or other files are just pointers back here.
+
+Add TODO items when:
+- The user flags something during Phase 1 ("note to come back to this")
+- Gap analysis surfaces open questions (Q2)
+- PR review comments identify work to defer
 
 Here's an example format:
 
 ```markdown
 ## Pending
 
-- [ ] Define the networking protocol for multiplayer sessions
-- [ ] Decide on a save file format — binary vs JSON vs SQLite
-- [ ] Add error handling for when the server is unreachable
+- [ ] Define the networking protocol for multiplayer sessions *(Phase 1 dictation)*
+- [ ] Decide on a save file format — binary vs JSON vs SQLite *(gap analysis Q4)*
+- [ ] Add error handling for when the server is unreachable *(PR #3 review)*
 
 ## Complete
 
-- [x] Write the initial project overview
-- [x] Document the three core gameplay loops
+- [x] Write the initial project overview *(Phase 1 dictation)*
+- [x] Document the three core gameplay loops *(Phase 1 dictation)*
 ```
 
 ---
