@@ -19,6 +19,22 @@ def slugify(name: str) -> str:
     return "".join(word[0].upper() + word[1:] for word in name.split() if word)
 
 
+def ensure_project_files(project_dir: str, slug: str, full_name: str) -> list[str]:
+    """Create any missing standard project files. Returns list of created paths."""
+    templates = {
+        f"Daydream-{slug}.md": f"# {full_name}\n\n## Overview\n\n",
+        f"TODO-{slug}.md": f"# To-Do — {full_name}\n\n---\n\n## Pending\n\n",
+        f"Prompts-{slug}.md": f"# Prompts — {full_name}\n\n---\n\n",
+    }
+    created = []
+    for filename, content in templates.items():
+        path = os.path.join(project_dir, filename)
+        if not os.path.isfile(path):
+            write_file(path, content)
+            created.append(path)
+    return created
+
+
 def write_file(path: str, content: str) -> None:
     with open(path, "w", encoding="utf-8") as f:
         f.write(content)
