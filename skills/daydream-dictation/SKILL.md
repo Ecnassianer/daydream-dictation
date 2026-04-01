@@ -39,7 +39,7 @@ When the user tells you which project to work on:
    ```
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
 2. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
-3. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
+3. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
 4. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
 
 If no specific project is active, clear the active project:
@@ -70,7 +70,7 @@ Runs the session-start workflow:
 2. If the project doesn't exist, run `dd_init_project.py` to create it
 3. Run `dd_switch_project.py` to set the active project (skip if `dd_init_project.py` just ran — it switches automatically)
 4. Read the tail of the Prompts document (last 20–30 entries)
-5. Load commonly confused words from `.claude/dd-variants.md` if present
+5. Load commonly confused words from `.claude/dd-voice-variants.md` if present
 6. Confirm the prompt logging hook is firing
 7. Tell the user you're ready — briefly remind them of the three phases if this seems like their first time
 
