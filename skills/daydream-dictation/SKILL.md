@@ -38,8 +38,8 @@ When the user tells you which project to work on:
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py "ProjectSlug"
    ```
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
-2. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
-3. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
+2.**Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
+3. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
 4. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
 
 If no specific project is active, clear the active project:
