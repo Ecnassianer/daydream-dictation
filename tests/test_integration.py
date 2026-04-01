@@ -26,6 +26,7 @@ _HOOKS = os.path.join(_REPO_ROOT, "hooks")
 _INIT_SCRIPT = os.path.join(_SCRIPTS, "dd_init_project.py")
 _SWITCH_SCRIPT = os.path.join(_SCRIPTS, "dd_switch_project.py")
 _LOG_PROMPT = os.path.join(_HOOKS, "dd_log_prompt.py")
+_STOP_HOOK = os.path.join(_HOOKS, "dd_stop_hook.py")
 
 
 def _make_git_repo():
@@ -312,3 +313,101 @@ class TestStateManagement:
         assert os.path.isfile(meta)
         with open(meta, encoding="utf-8") as f:
             assert "stale state" in f.read()
+
+
+# ---------------------------------------------------------------------------
+# Section 7 — dd_stop_hook.py Integration
+# ---------------------------------------------------------------------------
+
+def _make_git_repo_with_remote():
+    """Create a temp git repo with a local bare remote for push testing."""
+    base = tempfile.mkdtemp(prefix="dd_stop_")
+    bare = os.path.join(base, "remote.git")
+    work = os.path.join(base, "work")
+    subprocess.run(["git", "init", "--bare", bare], capture_output=True)
+    subprocess.run(["git", "clone", bare, work], capture_output=True)
+    subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=work, capture_output=True)
+    subprocess.run(["git", "config", "user.name", "Test"], cwd=work, capture_output=True)
+    readme = os.path.join(work, "README.md")
+    with open(readme, "w") as f:
+        f.write("# test\n")
+    subprocess.run(["git", "add", "README.md"], cwd=work, capture_output=True)
+    subprocess.run(["git", "commit", "-m", "init"], cwd=work, capture_output=True)
+    subprocess.run(["git", "push"], cwd=work, capture_output=True)
+    return base, work
+
+
+class TestStopHookIntegration:
+
+    def setup_method(self):
+        self.base, self.repo = _make_git_repo_with_remote()
+
+    def teardown_method(self):
+        shutil.rmtree(self.base, ignore_errors=True)
+
+    def _run_stop_hook(self, stdin_data=None):
+        if stdin_data is None:
+            stdin_data = "{}"
+        return _run_script(_STOP_HOOK, [], self.repo, stdin_data=stdin_data)
+
+    def test_clean_repo_exits_zero(self):
+        """Clean repo with everything committed and pushed exits 0."""
+        r = self._run_stop_hook()
+        assert r.returncode == 0
+
+    def test_uncommitted_changes_exit_two(self):
+        """Modified tracked file without committing exits 2."""
+        readme = os.path.join(self.repo, "README.md")
+        with open(readme, "a") as f:
+            f.write("dirty\n")
+        r = self._run_stop_hook()
+        assert r.returncode == 2
+        assert "uncommitted" in r.stderr.lower()
+
+    def test_staged_changes_exit_two(self):
+        """Staged but uncommitted changes exit 2."""
+        readme = os.path.join(self.repo, "README.md")
+        with open(readme, "a") as f:
+            f.write("staged\n")
+        subprocess.run(["git", "add", "README.md"], cwd=self.repo, capture_output=True)
+        r = self._run_stop_hook()
+        assert r.returncode == 2
+        assert "uncommitted" in r.stderr.lower()
+
+    def test_untracked_files_exit_two(self):
+        """Untracked file in repo exits 2."""
+        newfile = os.path.join(self.repo, "newfile.txt")
+        with open(newfile, "w") as f:
+            f.write("untracked\n")
+        r = self._run_stop_hook()
+        assert r.returncode == 2
+        assert "untracked" in r.stderr.lower()
+
+    def test_unpushed_commits_exit_two(self):
+        """Committed but unpushed changes exit 2."""
+        readme = os.path.join(self.repo, "README.md")
+        with open(readme, "a") as f:
+            f.write("new content\n")
+        subprocess.run(["git", "add", "README.md"], cwd=self.repo, capture_output=True)
+        subprocess.run(["git", "commit", "-m", "local only"], cwd=self.repo, capture_output=True)
+        r = self._run_stop_hook()
+        assert r.returncode == 2
+        assert "unpushed" in r.stderr.lower()
+
+    def test_recursion_guard_exits_zero(self):
+        """stop_hook_active=true bypasses all checks, even with dirty state."""
+        readme = os.path.join(self.repo, "README.md")
+        with open(readme, "a") as f:
+            f.write("dirty but guarded\n")
+        stdin = json.dumps({"stop_hook_active": True})
+        r = self._run_stop_hook(stdin_data=stdin)
+        assert r.returncode == 0
+
+    def test_no_vcs_exits_zero(self):
+        """Directory with no VCS exits 0."""
+        plain_dir = tempfile.mkdtemp(prefix="dd_novcs_")
+        try:
+            r = _run_script(_STOP_HOOK, [], plain_dir, stdin_data="{}")
+            assert r.returncode == 0
+        finally:
+            shutil.rmtree(plain_dir, ignore_errors=True)
