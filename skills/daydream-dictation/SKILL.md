@@ -99,7 +99,7 @@ The user is in a creative flow state and will not be reading the agent's respons
 
 ### What The Agent Does During Phase 2
 
-The user is now reading the agent's responses from Phase 1 and engaging interactively. The dynamic shifts from monologue to conversation.
+The user is now reading the agent's responses from Phase 1 and engaging interactively. The dynamic shifts from monologue to conversation. The user usually starts from the oldest response first and works down, so responses will still be overlapping.
 
 - Respond to the user's answers and follow-ups in real time — this is a dialog, not a dump
 - When the user answers a clarifying question from Phase 1, update the document immediately and remove or resolve the inline note (`<!-- clarify: ... -->`)
