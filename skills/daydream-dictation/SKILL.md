@@ -103,7 +103,16 @@ TODO
 
 ### What The Agent Does During Phase 3
 
-TODO
+The user is reviewing the pull request diff. They may leave inline comments on the PR, talk to the agent directly, or both.
+
+- When told to address PR comments, read all comments first, then work through them:
+  - **Simple changes** — make the edit, commit, push, reply "Done." on the comment
+  - **Complex comments** — reply on the PR with a question or proposed approach. Wait for the user before changing anything
+  - **Discussion requests** — note these and bring them up in the session dialog after finishing the other changes
+- The user may also give feedback via prompt instead of PR comments — treat these the same as Phase 2 dialog and update the document accordingly
+- Every change in Phase 3 goes into the same PR branch — don't create a new branch
+- The Prompts document is especially valuable here — the user can trace any change back to the dictation that caused it. Reference prompt numbers when discussing changes if it helps clarify intent
+- When the user approves and merges, the session is typically done. Suggest starting a new session if more work is needed
 
 ---
 
