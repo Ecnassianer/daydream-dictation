@@ -144,11 +144,6 @@ The Daydream document is the root artifact of an entire design or creative endea
 
 The Daydream document doesn't need every piece of information about the design in it. Plenty can be kept in companion documents — translations in a string table, large datasets in a CSV, detailed technical decisions in the TechDesign doc. The Daydream document should focus on *desired outcomes*, not implementation details. Decisions about frameworks, specific vendors, or which toolkit performs best shouldn't be in the Daydream document. Those decisions should be recorded, but not in the core Daydream document.
 
-## The TechDesign Document (or TDD)
-Where the Daydream document focused on desired outcomes, the TechDesign document records the technical details that build toward a particular outcome. It should be maintained by AI agents, and record important intermediary decisions that were made on the way to a final design. If the Daydream document is asking for something and the TDD contradicts it, it means a decision we made along the way is wrong. Figure out a new answer to the decision that meets the Daydream requirements and update the TDD and implementation with the new decision.
-
-Decisions that were decided against should be recorded as well. List pros and cons or any dealbreakers of those options. Include comparative data that was collected, or reference companion documents where it is recorded.
-
 ## The TODO Document
 
 The TODO document tracks outstanding work that comes up during dictation, responses, or review. Each one should have a status tracked and should be marked complete when finished.
@@ -201,7 +196,7 @@ Prompts will then log to `Prompts-ddMetadiscussion` at the repo root.
 
 These are not created by `dd_init_project.py` — create them when a project needs them.
 
-- **`TechDesign-<Slug>.md`** — Technical design document maintained by the implementing agent. Records *technical choices* (technologies, architecture, tradeoffs) that were made in order to execute on the design doc's goals. The TechDesign doc should also document which options were NOT chosen and why (pros and cons are helpful, any dealbreakers). Dated entries under topical sections. Also defines testing instrumentation and the integration test suite. The implementing agent should not edit the main design document, but should update the TechDesign document to record technical choices. If the two documents disagree, the design doc wins. TechDesign choices are not set in stone, if requirements change, the agent should discuss changing the TechDesign choices if they no longer fit, and keep them up to date.
+- **`TechDesign-<Slug>.md`** — Technical design document maintained by the implementing agent. Records *technical choices* (technologies, architecture, tradeoffs) that were made in order to execute on the design doc's goals. The TechDesign doc should also document which options were NOT chosen and why (pros and cons are helpful, any dealbreakers). Dated entries under topical sections. Also defines testing instrumentation and the integration test suite. The implementing agent should not edit the main design document, but should update the TechDesign document to record technical choices. If the two documents disagree, the design doc wins. Figure out a new answer to the decision that meets the Daydream requirements and update the TDD and implementation with the new decision. TechDesign choices are not set in stone, if requirements change, the agent should discuss changing the TechDesign choices if they no longer fit, and keep them up to date.
 - **`StringTable-<Slug>.md`** — User-facing strings with translations, organized by string key. When a new string is added to the design, its translations go in the string table in the same commit.
 - **`DebugTools-<Slug>.md`** — Debug commands, cheat codes, test shortcuts — anything that won't ship in the final version. Keeps debug-only features out of the main design doc.
 
