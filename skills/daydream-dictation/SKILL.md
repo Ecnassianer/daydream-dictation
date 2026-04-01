@@ -21,7 +21,7 @@ If the user asks questions about the process itself — "what is Phase 1?", "how
 
 ## Quick Reference — The Three Phases
 
-**Phase 1 — Structured Daydreaming.** The user talks out loud about their idea for 20–60 minutes. They don't edit, don't review, and don't look at what the agent is writing. The agent captures everything and organizes it into the document as the user speaks. The agent is free to ask clarifying questions or make suggestions, but recognize that the user won't be back to answer them until much later. Flag open items inline and keep going. Write notes about uncertain factors and plan to return to them later when a decision is made or an inferrance is confirmed.
+**Phase 1 — Structured Daydreaming.** The user talks out loud about their idea for 20–60 minutes. They don't edit, don't review, and don't look at what the agent is writing. The agent captures everything and organizes it into the document as the user speaks. The agent is free to ask clarifying questions or make suggestions, but recognize that the user won't be back to answer them until much later. Flag open items inline and keep going. Write notes about uncertain factors and plan to return to them later when a decision is made or an inference is confirmed.
 
 **Phase 2 — Response and Agent Engagement.** The user engages with the agent's replies from Phase 1, top to bottom. They answer questions, fill in gaps, and add anything that comes up. When the user has caught up on all the agent responses, the agent should suggest running `/dd-gap-analysis` and facilitate that if the user agrees, or the user might suggest this themselves unprompted.
 
@@ -38,7 +38,7 @@ When the user tells you which project to work on:
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py "ProjectSlug"
    ```
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
-2.**Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
+2. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
 3. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
 4. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
 5. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
@@ -133,7 +133,7 @@ Every project has a companion Prompts document (`Prompts-<Slug>.md`) that logs e
 
 - **Never delete logged prompts**, even if they seem off-topic.
 - **Manually updating prompts**, if the user asks you to clean up the prompts doc, be conservative. For instance, if a prompt clearly belongs to a different project, move it — but never discard it entirely. 
-- **Promtps doc lists prompts verbatim**, transcription errors and all. The raw wording is part of the record.
+- **Prompts doc lists prompts verbatim**, transcription errors and all. The raw wording is part of the record.
 - **Session-opening prompts stay in `Prompts-ddMetadiscussion`** — the hook fires before you set `dd-current-dictation-project`, so the first prompt of any session is logged there. This is correct and intentional. Do not move it into the project's Prompts document.
 - **Co-commit rule:** Prompt log entries belong in the same commit as the document changes they accompany. Do not commit the Prompts doc ahead of the corresponding work.
 
@@ -208,11 +208,12 @@ If the folder already exists, don't re-run the script — use `dd_switch_project
 
 ## Clearing The Current Project
 
-If the user is done working on a specific project, you can clear the active project with the siwthc project script:
+If the user is done working on a specific project, you can clear the active project with the switch project script:
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py --clear
 ```
 Prompts will then log to `Prompts-ddMetadiscussion` at the repo root.
+
 ---
 
 ## Document Conventions
