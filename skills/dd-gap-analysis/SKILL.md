@@ -32,6 +32,8 @@ A standalone skill that analyzes design documents for gaps, missing coverage, an
 
 4. After answering all seven, write a summary of actionable items and offer to address them.
 
+- **Standalone output.** The gap analysis produces a self-contained report. Do not modify any documents — only read, report and offer to help. The user decides what to act on.
+
 ---
 
 ## The Seven Questions
@@ -65,13 +67,6 @@ If the project has a `StringTable-<Slug>.md` or other localization files, check 
 Catch-all for anything not covered above — missing asset lists, undefined edge cases, unresolved working names, placeholder items (`[Item N — not yet documented]`), or anything else that would block a complete implementation.
 
 ---
-
-## Design Principles
-
-- **No Daydream Dictation awareness required.** Do not assume the documents were created through the dictation process. This skill works on any design document in any project folder.
-- **TODO document integration.** Look specifically for a TODO file alongside the design document (matching `TODO-*.md`). If found, surface open items as part of question 2. If no TODO file exists, look for a TODO list in another document. If no TODO list exists, note this and move on.
-- **Contextual skipping.** Questions 5 and 6 are domain-specific (controls, string tables). Evaluate whether they apply to the project and skip them with a brief note if they don't, rather than producing empty sections.
-- **Standalone output.** The gap analysis produces a self-contained report. Do not modify any documents — only read and report. The user decides what to act on.
 
 ## Output Format
 
