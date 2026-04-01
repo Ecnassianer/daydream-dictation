@@ -17,7 +17,7 @@ Use `/dd-teach` to learn the process interactively, tailored to your experience 
 ### Prerequisites
 
 - [Claude Code](https://claude.ai/code) (CLI, desktop app, or IDE extension)
-- Python 3.10+
+- Python 3.9+
 - Git (or another supported VCS)
 
 ### Install the plugin
