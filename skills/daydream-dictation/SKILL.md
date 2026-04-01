@@ -40,23 +40,19 @@ When the user tells you which project to work on:
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
 2.**Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
 3. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
-4. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
-
-If no specific project is active, clear the active project:
-```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py --clear
-```
-Prompts will then log to `Prompts-ddMetadiscussion` at the repo root.
+4. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
+5. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
+6. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt.
 
 ### The `dd-current-dictation-project` State File
 
-A plain text file at the repo root containing the absolute path to the currently active **project folder** (not the Prompts file). Not tracked by git (listed in `.gitignore`).
+A plain text file at the repo root containing the absolute path to the currently active **project folder**. Not tracked by git (should be listed in `.gitignore`).
 
-The `UserPromptSubmit` hook reads this folder path and dynamically finds the Prompts file inside it. This decouples the state file from the exact Prompts filename.
+The `UserPromptSubmit` hook reads this folder path and dynamically finds the Prompts file inside it, where it appends the raw text prompt. The raw prompts are very useful in phase 3 in particular.
 
-The file is not automatically cleared between sessions — it persists. Always set it explicitly when the user names a project.
+The file is not automatically cleared between sessions — it persists. Always update it with the script when the user names a project they want to work on.
 
-**Important:** `SessionStart` hooks and `UserPromptSubmit`-based clearing have both been tried and cause sessions to hang on startup. `Stop`/`SessionEnd` hooks clear too aggressively (after every response). Manual management is the current approach.
+**Important:** Automating this with `SessionStart` hook-based clearing has been tried but it causes sessions to hang on startup. `Stop`/`SessionEnd` hooks clear too aggressively (after every response). We may revisit improving this script to clear on session end in the future.
 
 ---
 
@@ -146,6 +142,13 @@ If the folder already exists, don't re-run the script — use `dd_switch_project
 - Prompts doc exists but `Daydream-<Slug>.md` or `TODO-<Slug>.md` missing → create missing files manually with matching header format
 - No git remote configured → stop hook will fail on push; help user set up remote
 
+## Clearing The Current Project
+
+If the user is done working on a specific project, you can clear the active project with the siwthc project script:
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py --clear
+```
+Prompts will then log to `Prompts-ddMetadiscussion` at the repo root.
 ---
 
 ## Document Conventions
