@@ -148,12 +148,7 @@ The Daydream document doesn't need every piece of information about the design i
 
 The TODO document (`TODO-<Slug>.md`) tracks outstanding work that comes up during dictation, responses, or review. Each item should have a status and should be marked complete when finished. The TODO document is the canonical list — inline references in the Daydream doc or other files are just pointers back here.
 
-Add TODO items when:
-- The user flags something during Phase 1 ("note to come back to this")
-- Gap analysis surfaces open questions (Q2)
-- PR review comments identify work to defer
-
-Here's an example format:
+Here's an example format that includes a source of when the TODO came up:
 
 ```markdown
 ## Pending
