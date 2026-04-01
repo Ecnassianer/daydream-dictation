@@ -72,6 +72,9 @@ def main() -> None:
 
     if prompts_doc is None:
         prompts_doc = os.path.join(repo_root, "Prompts-ddMetadiscussion")
+        if not os.path.isfile(prompts_doc):
+            with open(prompts_doc, "w", encoding="utf-8") as f:
+                f.write("# Prompts \u2014 ddMetadiscussion\n\n---\n\n")
 
     # Append numbered entry
     entry_num = next_entry_number(prompts_doc)
