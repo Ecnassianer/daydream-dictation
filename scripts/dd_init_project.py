@@ -99,14 +99,7 @@ def main() -> None:
     print(f"  Folder:  {project_dir}")
     print(f"  VCS:     {vcs or 'none detected'}\n")
 
-    daydream_doc_path = os.path.join(project_dir, f"Daydream-{slug}.md")
-    dd.write_file(daydream_doc_path, f"# {full_name}\n\n## Overview\n\n")
-
-    todo_path = os.path.join(project_dir, f"TODO-{slug}.md")
-    dd.write_file(todo_path, f"# To-Do — {full_name}\n\n---\n\n## Pending\n\n")
-
-    prompts_path = os.path.join(project_dir, f"Prompts-{slug}.md")
-    dd.write_file(prompts_path, f"# Prompts — {full_name}\n\n---\n\n")
+    created = dd.ensure_project_files(project_dir, slug, full_name)
 
     # Ensure dd-current-dictation-project is in .gitignore
     _ensure_gitignore(repo_root)
@@ -116,11 +109,11 @@ def main() -> None:
     current_project_path = os.path.join(repo_root, "dd-current-dictation-project")
     with open(current_project_path, "w", encoding="utf-8") as f:
         f.write(project_dir)
-    print(f"\n  Set dd-current-dictation-project → {project_dir}")
+    print(f"\n  Set dd-current-dictation-project -> {project_dir}")
 
     commit_msg = (f"Initialize {full_name} project\n\n"
                   f"Creates Daydream, TODO, and Prompts documents for {slug}.")
-    dd.checkpoint([daydream_doc_path, todo_path, prompts_path], commit_msg, repo_root, vcs)
+    dd.checkpoint(created, commit_msg, repo_root, vcs)
 
     print(f"\nDone. Project '{full_name}' is ready in {project_dir}/")
 

@@ -332,6 +332,78 @@ class TestWriteFile:
 
 
 # ---------------------------------------------------------------------------
+# ensure_project_files
+# ---------------------------------------------------------------------------
+
+class TestEnsureProjectFiles:
+
+    def setup_method(self):
+        self.tmpdir = make_temp_dir()
+        self.slug = "MyProject"
+        self.name = "My Project"
+
+    def teardown_method(self):
+        shutil.rmtree(self.tmpdir, ignore_errors=True)
+
+    def _expected_files(self):
+        return [
+            f"Daydream-{self.slug}.md",
+            f"TODO-{self.slug}.md",
+            f"Prompts-{self.slug}.md",
+        ]
+
+    def test_creates_all_files_when_none_exist(self):
+        created = dd_lib.ensure_project_files(self.tmpdir, self.slug, self.name)
+        assert len(created) == 3
+        for filename in self._expected_files():
+            path = os.path.join(self.tmpdir, filename)
+            assert os.path.isfile(path)
+
+    def test_creates_no_files_when_all_exist(self):
+        # Pre-create all files
+        for filename in self._expected_files():
+            path = os.path.join(self.tmpdir, filename)
+            with open(path, "w") as f:
+                f.write("existing content")
+        created = dd_lib.ensure_project_files(self.tmpdir, self.slug, self.name)
+        assert created == []
+        # Verify existing content was not overwritten
+        with open(os.path.join(self.tmpdir, f"Daydream-{self.slug}.md")) as f:
+            assert f.read() == "existing content"
+
+    def test_creates_only_missing_files(self):
+        # Pre-create just the Daydream doc
+        existing = os.path.join(self.tmpdir, f"Daydream-{self.slug}.md")
+        with open(existing, "w") as f:
+            f.write("existing content")
+        created = dd_lib.ensure_project_files(self.tmpdir, self.slug, self.name)
+        assert len(created) == 2
+        # Daydream doc should not be in created list
+        assert not any(f"Daydream-{self.slug}.md" in p for p in created)
+        # But TODO and Prompts should be
+        assert any(f"TODO-{self.slug}.md" in p for p in created)
+        assert any(f"Prompts-{self.slug}.md" in p for p in created)
+        # Existing file untouched
+        with open(existing) as f:
+            assert f.read() == "existing content"
+
+    def test_created_files_have_correct_content(self):
+        dd_lib.ensure_project_files(self.tmpdir, self.slug, self.name)
+        with open(os.path.join(self.tmpdir, f"Daydream-{self.slug}.md"), encoding="utf-8") as f:
+            assert f"# {self.name}" in f.read()
+        with open(os.path.join(self.tmpdir, f"TODO-{self.slug}.md"), encoding="utf-8") as f:
+            assert f"# To-Do \u2014 {self.name}" in f.read()
+        with open(os.path.join(self.tmpdir, f"Prompts-{self.slug}.md"), encoding="utf-8") as f:
+            assert f"# Prompts \u2014 {self.name}" in f.read()
+
+    def test_returns_full_paths(self):
+        created = dd_lib.ensure_project_files(self.tmpdir, self.slug, self.name)
+        for path in created:
+            assert os.path.isabs(path)
+            assert self.tmpdir in path
+
+
+# ---------------------------------------------------------------------------
 # checkpoint dispatch (no actual VCS calls — just verify dispatcher works)
 # ---------------------------------------------------------------------------
 
