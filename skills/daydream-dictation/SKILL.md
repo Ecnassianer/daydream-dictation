@@ -198,6 +198,10 @@ If the folder already exists, don't re-run the script — use `dd_switch_project
 
 **Project root resolution:** CLI `--project-root` → `.claude/dd-projects-root` file → repo root.
 
+### Custom Project Root
+
+By default, project folders are created at the repo root. If a user wants all Daydream projects in a subdirectory (e.g., `docs/` or `design/`), they can create `.claude/dd-projects-root` containing the absolute path to that directory. This is useful for repos where the root is cluttered or where design documents belong in a specific subtree. The file is a single line — just the path, no other syntax.
+
 ### Error Recovery
 
 - `dd-current-dictation-project` points to nonexistent folder → run `dd_switch_project.py` with the correct slug
