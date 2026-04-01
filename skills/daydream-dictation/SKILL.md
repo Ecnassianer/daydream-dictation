@@ -152,7 +152,19 @@ Decisions that were decided against should be recorded as well. List pros and co
 The TODO document tracks outstanding work that comes up during dictation, responses, or review. Each one should have a status tracked and should be marked complete when finished.
 
 Here's an example format:
-TODO: Write an example format for a TODO item(s).
+
+```markdown
+## Pending
+
+- [ ] Define the networking protocol for multiplayer sessions
+- [ ] Decide on a save file format — binary vs JSON vs SQLite
+- [ ] Add error handling for when the server is unreachable
+
+## Complete
+
+- [x] Write the initial project overview
+- [x] Document the three core gameplay loops
+```
 
 ---
 
