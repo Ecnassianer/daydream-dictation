@@ -136,11 +136,13 @@ Sometimes two sessions will attempt to use the same number and merging the promp
 
 ## The Daydream Document
 
-The Daydream document is the root artifact of an entire design or creative endeavor. It captures all the central ideas, summarizes everything that is essential about the design, and references other documents that contain specialized knowledge. In order to work on any part of the project, everything in the Daydream document should be understood. If something contracdicts the Daydream document, that's a problem, the contradiction needs to be worked out. If another document seems orphaned, it needs and expalantion to be added to the Daydream document.
+The Daydream document is the root artifact of an entire design or creative endeavor. It captures all the central ideas, summarizes everything that is essential about the design, and references other documents that contain specialized knowledge. In order to work on any part of the project, everything in the Daydream document should be understood.
 
-The Daydream document doesn't need every piece of information about the design in it. Plenty can be kept in companion documents. Translations of text to 100 different languages are better kept in a string table. If a design requires 250 years of tide level data, that's better kept in a CSV companion. The agent can decide to spin off a growing Daydream section into its own specialized document, or bring that up as a suggestion for the user.
+- If something contradicts the Daydream document, that's a problem — the contradiction needs to be worked out. Flag it to the user.
+- If a companion document seems orphaned (not referenced from the Daydream doc), add an explanation to the Daydream document linking to it.
+- If a section is growing large or highly specialized, suggest spinning it off into its own companion document. Keep a summary and reference in the Daydream doc.
 
-The Daydream document should focus on the desired outcome, not implementation details, or decisions that were made along the way to those goals. Decisions about frameworks, specific vendors, or which toolkit performs best shouldn't be in the Daydream document. Those decisions should be recorded, but not in the core Daydream document.
+The Daydream document doesn't need every piece of information about the design in it. Plenty can be kept in companion documents — translations in a string table, large datasets in a CSV, detailed technical decisions in the TechDesign doc. The Daydream document should focus on *desired outcomes*, not implementation details. When the user dictates implementation choices (frameworks, vendors, toolkits), redirect those to `TechDesign-<Slug>.md` rather than writing them into the Daydream doc.
 
 ## The TechDesign Document (or TDD)
 Where the Daydream document focused on desired outcomes, the TechDesign document records the technical details that build toward a particular outcome. It should be maintained by AI agents, and record important intermediary decisions that were made on the way to a final design. If the Daydream document is asking for something and the TDD contradicts it, it means a decision we made along the way is wrong. Figure out a new answer to the decision that meets the Daydream requirements and update the TDD and implementation with the new decision.
