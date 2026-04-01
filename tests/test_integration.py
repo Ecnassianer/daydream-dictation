@@ -1,9 +1,6 @@
 """
 tests/test_integration.py — Integration tests for scripts and hooks.
 
-Covers gaps from TestPlan-DaydreamDictationSkill.md Sections 5, 6, and 8
-that aren't covered by unit tests in test_dd_lib.py.
-
 Run with:
     cd <plugin-root>
     python3 -m pytest tests/test_integration.py -v
