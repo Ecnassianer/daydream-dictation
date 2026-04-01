@@ -70,7 +70,7 @@ Runs the session-start workflow:
 2. If the project doesn't exist, run `dd_init_project.py` to create it
 3. Run `dd_switch_project.py` to set the active project (skip if `dd_init_project.py` just ran — it switches automatically)
 4. Read the tail of the Prompts document (last 20–30 entries)
-5. Load commonly confused words from `.claude/dd-variants.md` if present
+5. Load commonly confused words from `.claude/dd-voice-variants.md` if present
 6. Confirm the prompt logging hook is firing
 7. Tell the user you're ready — briefly remind them of the three phases if this seems like their first time
 

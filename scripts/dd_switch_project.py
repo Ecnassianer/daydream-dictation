@@ -52,14 +52,12 @@ def main() -> None:
         print(f"  To create a new project, use dd_init_project.py instead.", file=sys.stderr)
         sys.exit(1)
 
-    # Verify expected files exist
-    expected = [f"Daydream-{slug}.md", f"TODO-{slug}.md", f"Prompts-{slug}.md"]
-    missing = [f for f in expected if not os.path.isfile(os.path.join(project_dir, f))]
-    if missing:
-        print(f"WARNING: missing files in {project_dir}:", file=sys.stderr)
-        for f in missing:
-            print(f"  - {f}", file=sys.stderr)
-        print("  Switching anyway — create missing files before proceeding.", file=sys.stderr)
+    # Create any missing standard project files
+    created = dd.ensure_project_files(project_dir, slug, name)
+    if created:
+        print(f"  Created missing files:")
+        for f in created:
+            print(f"    - {os.path.basename(f)}")
 
     current_project_path = os.path.join(repo_root, "dd-current-dictation-project")
     with open(current_project_path, "w", encoding="utf-8") as f:
