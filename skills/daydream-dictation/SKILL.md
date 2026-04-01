@@ -33,12 +33,20 @@ If the user asks questions about the process itself — "what is Phase 1?", "how
 
 When the user tells you which project to work on:
 
-1. **Set the active project immediately** — `dd_init_project.py` write the absolute path to the project's **folder** into `dd-current-dictation-project` at the repo root. Do this as your very first action, before anything else. The file may contain a stale path from a previous session. (For new projects,  handles this automatically.)
+1. **Switch to the project** — run `dd_switch_project.py` with the project slug or name. This sets `dd-current-dictation-project` and verifies the project files exist. Do this as your very first action.
+   ```bash
+   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py "ProjectSlug"
+   ```
+   For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
 2. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
 3. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session.
 4. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt. If not, prompts will need to be backfilled manually at session end.
 
-If no specific project is active, write an empty string to `dd-current-dictation-project` — prompts will log to `Prompts-ddMetadiscussion` at the repo root.
+If no specific project is active, clear the active project:
+```bash
+python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py --clear
+```
+Prompts will then log to `Prompts-ddMetadiscussion` at the repo root.
 
 ### The `dd-current-dictation-project` State File
 
@@ -60,10 +68,11 @@ Runs the session-start workflow:
 
 1. If no project is specified, ask the user which project they're working on
 2. If the project doesn't exist, run `dd_init_project.py` to create it
-3. Set `dd-current-dictation-project` to the project folder path
+3. Run `dd_switch_project.py` to set the active project (skip if `dd_init_project.py` just ran — it switches automatically)
 4. Read the tail of the Prompts document (last 20–30 entries)
-5. Confirm the prompt logging hook is firing
-6. Tell the user you're ready — briefly remind them of the three phases if this seems like their first time
+5. Load commonly confused words from `.claude/dd-variants.md` if present
+6. Confirm the prompt logging hook is firing
+7. Tell the user you're ready — briefly remind them of the three phases if this seems like their first time
 
 **With argument:** `/daydream-dictation "My New Project"` — if the project exists, start it; if not, create it first via the script.
 
@@ -127,13 +136,13 @@ python3 ${CLAUDE_SKILL_DIR}/../../scripts/dd_init_project.py --project-root /pat
 
 The script creates `<Slug>/Daydream-<Slug>.md`, `TODO-<Slug>.md`, `Prompts-<Slug>.md`, sets `dd-current-dictation-project`, and commits.
 
-If the folder already exists, don't re-run the script — just set the active project and start working. Verify `Daydream-<Slug>.md`, `TODO-<Slug>.md`, and `Prompts-<Slug>.md` all exist before proceeding.
+If the folder already exists, don't re-run the script — use `dd_switch_project.py` to set the active project. It verifies that the expected files exist.
 
 **Project root resolution:** CLI `--project-root` → `.claude/dd-projects-root` file → repo root.
 
 ### Error Recovery
 
-- `dd-current-dictation-project` points to nonexistent folder → rewrite with correct path
+- `dd-current-dictation-project` points to nonexistent folder → run `dd_switch_project.py` with the correct slug
 - Prompts doc exists but `Daydream-<Slug>.md` or `TODO-<Slug>.md` missing → create missing files manually with matching header format
 - No git remote configured → stop hook will fail on push; help user set up remote
 
@@ -143,9 +152,16 @@ If the folder already exists, don't re-run the script — just set the active pr
 
 - **Placeholders for undescribed items:** `**[Item N — not yet documented]**`
 - **Working names:** `**Name** *(working name)*`
-- **Debug/test tools** go in a dedicated `DebugTools-<ProjectName>.md` file, not the main document. Create it if needed.
-- **To-do items** always go in `TODO-<ProjectName>.md` (canonical list). May also appear inline where contextually useful.
+- **To-do items** always go in `TODO-<Slug>.md` (canonical list). May also appear inline where contextually useful.
 - **Per-project instructions** can be placed in a `CLAUDE.md` inside the project folder (e.g., `Campfire/CLAUDE.md`). Use this for project-specific rules like localization requirements.
+
+### Optional Companion Documents
+
+These are not created by `dd_init_project.py` — create them when a project needs them.
+
+- **`TechDesign-<Slug>.md`** — Technical design document maintained by the implementing agent. Records *how* (technologies, architecture, tradeoffs) vs the design doc's *what* and *why*. Dated entries under topical sections. Also defines testing instrumentation and the integration test suite. The implementing agent should not edit the main design document.
+- **`StringTable-<Slug>.md`** — User-facing strings with translations, organized by string key. When a new string is added to the design, its translations go in the string table in the same commit. Referenced by gap analysis Q6.
+- **`DebugTools-<Slug>.md`** — Debug commands, cheat codes, test shortcuts — anything that won't ship. Keeps debug-only features out of the main design doc.
 
 ---
 
@@ -163,7 +179,10 @@ If the folder already exists, don't re-run the script — just set the active pr
 
 When the user says to switch projects:
 
-1. Immediately update `dd-current-dictation-project` to the new project's folder path — this is your first action
+1. Run `dd_switch_project.py` with the new project's slug — this is your first action
+   ```bash
+   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py "NewProjectSlug"
+   ```
 2. Read the tail of the new project's Prompts document
 3. Continue working — subsequent prompts will log to the new project
 
