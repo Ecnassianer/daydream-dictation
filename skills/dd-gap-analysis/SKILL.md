@@ -52,7 +52,7 @@ Beyond what's missing — where does the existing design feel unclear, inconsist
 
 ### 4. What will the implementing agent need to know?
 
-Identify anything that an agent picking up this design document would find ambiguous or underspecified. What decisions would they have to make on their own because the document doesn't answer them? If the project has a `TechDesign-<Slug>.md`, check whether it covers the technical decisions needed to implement the design. If no TDD exists and the project has enough technical complexity to warrant one, note that.
+Identify anything that an agent picking up this design document would find ambiguous or underspecified. What decisions would they have to make on their own because the document doesn't answer them? If the project has a `TechDesign-<Slug>.md`, check whether it covers the technical decisions needed to implement the design. Does the document call out open decisions? Does the user want to make them now? If no TDD exists and the project has enough technical complexity to warrant one, note that.
 
 ### 5. Are there missing control definitions?
 
