@@ -16,37 +16,101 @@ Use `/dd-teach` to learn the process interactively, tailored to your experience 
 
 ### Prerequisites
 
-- [Claude Code](https://claude.ai/code) (CLI, desktop app, or IDE extension)
 - Python 3.9+
 - Git (or another supported VCS)
 
-### Install the plugin
+There are three installation methods depending on how you run Claude Code.
 
-Clone the repo:
+---
 
-```bash
-git clone https://github.com/Ecnassianer/daydream-dictation.git
+### Method 1 — Claude Code CLI
+
+Run these commands inside Claude Code:
+
+```shell
+/plugin marketplace add ecnassianer/daydream-dictation
+/plugin install daydream-dictation@daydream-dictation
+/reload-plugins
 ```
 
-Then add it to your Claude Code settings. Edit `~/.claude/settings.json` (or `.claude/settings.json` in your project):
+---
+
+### Method 2 — Claude Code Desktop (local or SSH sessions)
+
+The Desktop app supports plugins for local and SSH sessions (not remote sessions).
+
+1. Click **Customize** in the left sidebar.
+2. Next to **Personal plugins**, click the **+** button, then select **Create plugin > Add marketplace**.
+3. In the **Add marketplace** dialog, enter `ecnassianer/daydream-dictation` and click **Sync**.
+4. Click **+** next to Personal plugins again, then select **Browse plugins**.
+5. Open the **Personal** tab, find the **Daydream Dictation** tile, and click **+** to install it.
+
+---
+
+### Method 3 — Claude Code Cloud or manual install
+
+Claude.ai/code (remote cloud sessions) does not support the plugin system. Install manually instead.
+
+**Step 1 — Clone the plugin into your repo:**
+
+```bash
+git clone https://github.com/Ecnassianer/daydream-dictation.git DaydreamDictationSkill/CompletedSkill
+```
+
+**Step 2 — Wire up hooks in `.claude/settings.json`:**
 
 ```json
 {
-  "extraKnownMarketplaces": {
-    "local-plugins": {
-      "source": {
-        "source": "directory",
-        "path": "/absolute/path/to/daydream-dictation"
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 DaydreamDictationSkill/CompletedSkill/hooks/dd_log_prompt.py",
+            "timeout": 10
+          }
+        ]
       }
-    }
-  },
-  "enabledPlugins": {
-    "daydream-dictation@local-plugins": true
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 DaydreamDictationSkill/CompletedSkill/hooks/dd_stop_hook.py",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
   }
 }
 ```
 
-Replace `/absolute/path/to/daydream-dictation` with the actual path where you cloned the repo. Restart Claude Code to load the plugin.
+If you already have other settings in this file, merge the `hooks` key in — don't replace the whole file.
+
+**Step 3 — Reference the skills in `CLAUDE.md`:**
+
+```markdown
+## Daydream Dictation Skills (manually installed)
+
+The following skills are available. Read the referenced SKILL.md file when invoked:
+
+- **daydream-dictation** — Main workflow skill. See `DaydreamDictationSkill/CompletedSkill/skills/daydream-dictation/SKILL.md`
+- **dd-gap-analysis** — Gap analysis skill. See `DaydreamDictationSkill/CompletedSkill/skills/dd-gap-analysis/SKILL.md`
+- **dd-teach** — Interactive onboarding. See `DaydreamDictationSkill/CompletedSkill/skills/dd-teach/SKILL.md`
+- **dictate-daydream** — Alias for daydream-dictation. See `DaydreamDictationSkill/CompletedSkill/skills/dictate-daydream/SKILL.md`
+
+When the user invokes any of these skills, read the corresponding SKILL.md and follow its instructions.
+
+## Utility Scripts
+
+- `dd_init_project.py` — Create a new project: `python3 DaydreamDictationSkill/CompletedSkill/scripts/dd_init_project.py "Project Name"`
+- `dd_switch_project.py` — Switch active project: `python3 DaydreamDictationSkill/CompletedSkill/scripts/dd_switch_project.py "ProjectSlug"`
+```
+
+After updating `settings.json`, run `/hooks` or start a new session to activate the hooks.
 
 ## Usage
 
