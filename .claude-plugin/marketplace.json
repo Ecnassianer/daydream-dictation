@@ -1,0 +1,29 @@
+{
+  "name": "daydream-dictation",
+  "owner": {
+    "name": "Ecnassianer",
+    "email": "github.com/Ecnassianer"
+  },
+  "metadata": {
+    "description": "Voice-driven document authoring plugin for Claude Code. Structured daydreaming, interactive engagement, and diff review."
+  },
+  "plugins": [
+    {
+      "name": "daydream-dictation",
+      "source": {
+        "source": "github",
+        "repo": "Ecnassianer/daydream-dictation"
+      },
+      "description": "Voice-driven document authoring with a three-phase workflow: structured daydreaming, interactive engagement, and diff review.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Ecnassianer"
+      },
+      "homepage": "https://github.com/Ecnassianer/daydream-dictation",
+      "repository": "https://github.com/Ecnassianer/daydream-dictation",
+      "license": "MIT",
+      "keywords": ["dictation", "voice", "design-docs", "daydream"],
+      "category": "productivity"
+    }
+  ]
+}
