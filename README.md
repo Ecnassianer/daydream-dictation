@@ -175,7 +175,7 @@ Each project gets a folder with three documents:
 - `TODO-<Slug>.md` -- Outstanding work items
 - `Prompts-<Slug>.md` -- Verbatim log of every voice prompt
 
-Optional companion documents (`TechDesign-`, `StringTable-`, `DebugTools-`) can be added as a project grows.
+Optional companion documents (`DecisionTrace-`, `StringTable-`, `DebugTools-`) can be added as a project grows.
 
 ## Hooks
 

@@ -65,8 +65,8 @@ def main() -> None:
     if os.path.isfile(state_file):
         with open(state_file, encoding="utf-8") as f:
             project_folder = f.read().strip()
-        if project_folder:
-            # Project is set — always route here, creating the Prompts file if needed
+        if project_folder and os.path.isdir(project_folder):
+            # Project is set and folder exists — route here, creating the Prompts file if needed
             matches = sorted(glob_module.glob(os.path.join(project_folder, "Prompts-*")))
             if matches:
                 prompts_doc = matches[0]
@@ -74,7 +74,6 @@ def main() -> None:
                 # Derive slug from folder name and create the Prompts file
                 slug = os.path.basename(project_folder.rstrip("/"))
                 prompts_doc = os.path.join(project_folder, f"Prompts-{slug}.md")
-                os.makedirs(project_folder, exist_ok=True)
                 if not os.path.isfile(prompts_doc):
                     with open(prompts_doc, "w", encoding="utf-8") as f:
                         f.write(f"# Prompts \u2014 {slug}\n\n---\n\n")
