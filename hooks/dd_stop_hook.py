@@ -76,7 +76,8 @@ def check_git(repo_root: str) -> None:
         if unpushed > 0:
             print(
                 f"There are {unpushed} unpushed commit(s) on branch '{current_branch}'. "
-                "Please push these changes to the remote repository.",
+                "Please push these changes to the remote repository. "
+                "Do not create a new PR unless the existing PR has already been merged or the user asks for one.",
                 file=sys.stderr,
             )
             sys.exit(2)
@@ -90,7 +91,8 @@ def check_git(repo_root: str) -> None:
         if unpushed > 0:
             print(
                 f"Branch '{current_branch}' has {unpushed} unpushed commit(s) "
-                "and no remote branch. Please push these changes to the remote repository.",
+                "and no remote branch. Please push these changes to the remote repository. "
+                "Do not create a new PR unless the existing PR has already been merged or the user asks for one.",
                 file=sys.stderr,
             )
             sys.exit(2)
