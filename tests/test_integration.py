@@ -222,6 +222,21 @@ class TestLogPromptIntegration:
         # Should be numbered 2, not 3
         assert "\n2. second prompt\n" in content
 
+    def test_creates_prompts_file_when_missing(self):
+        """T-086: Project folder exists but has no Prompts file — hook creates one."""
+        project_dir = os.path.join(self.repo, "MyProject")
+        os.makedirs(project_dir)
+        self._set_project(project_dir)
+        self._log_prompt("hello from new project")
+        prompts = os.path.join(project_dir, "Prompts-MyProject.md")
+        assert os.path.isfile(prompts), "Prompts file should be created in project folder"
+        with open(prompts, encoding="utf-8") as f:
+            content = f.read()
+        assert "hello from new project" in content
+        # Should NOT fall back to metadiscussion
+        meta = os.path.join(self.repo, "Prompts-ddMetadiscussion")
+        assert not os.path.isfile(meta), "Should not fall back to metadiscussion"
+
     def test_exits_zero_on_write_failure(self):
         """T-067: Hook exits 0 even when it can't write."""
         # Point to a nonexistent directory
