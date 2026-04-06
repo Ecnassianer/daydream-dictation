@@ -110,7 +110,34 @@ When the user invokes any of these skills, read the corresponding SKILL.md and f
 - `dd_switch_project.py` — Switch active project: `python3 DaydreamDictationSkill/CompletedSkill/scripts/dd_switch_project.py "ProjectSlug"`
 ```
 
-After updating `settings.json`, run `/hooks` or start a new session to activate the hooks.
+**Step 4 — Fix tests for cloud environments (optional):**
+
+Cloud environments often have `commit.gpgsign=true` set globally, which causes the integration tests to fail. To fix this, add the following line to both `_make_git_repo()` and `_make_git_repo_with_remote()` in `tests/test_integration.py`, immediately after the `git config user.name` line:
+
+```python
+subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=tmpdir, capture_output=True)
+```
+
+For `_make_git_repo_with_remote()`, use `cwd=work` instead of `cwd=tmpdir`. Then run:
+
+```shell
+cd DaydreamDictationSkill/CompletedSkill
+pip install pytest
+python3 -m pytest tests/ -v
+```
+
+All 75 tests should pass.
+
+**Step 5 — Verify hooks are active:**
+
+After updating `settings.json`, run `/hooks` or start a new session to activate the hooks. To confirm the `UserPromptSubmit` hook is working, type a message and check that it appears in `Prompts-ddMetadiscussion` (or your active project's Prompts file).
+
+**What you get:**
+
+- **Prompt logging** — Every message is automatically appended to the active project's Prompts document
+- **Stop guard** — Claude won't stop until all changes are committed and pushed
+- **Skills** — `daydream-dictation`, `dd-gap-analysis`, `dd-teach`, and `dictate-daydream` are all available via CLAUDE.md references
+- **Project management** — `dd_init_project.py` and `dd_switch_project.py` work identically to the plugin version
 
 ## Usage
 
