@@ -1,6 +1,6 @@
 {
   "name": "daydream-dictation",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Voice-driven document authoring with a three-phase workflow: structured daydreaming, interactive engagement, and diff review.",
   "author": {
     "name": "Ecnassianer",
