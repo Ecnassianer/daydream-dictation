@@ -208,6 +208,7 @@ By default, project folders are created at the repo root. If a user wants all Da
 - Prompts doc exists but `Daydream-<Slug>.md` or `TODO-<Slug>.md` missing → create missing files manually with matching header format
 - `DesignDoc-<Slug>.md`exists, but `Daydream-<Slug>.md` does not → This is an old naming convention, update the filename to `Daydream-<Slug>.md`. Make a pull request with just the rename in it.
 - `DesignDoc-<Slug>`exists, but `Daydream-<Slug>.md` does not → This is an old naming convention, update the filename to `Daydream-<Slug>.md`. Make a pull request with just the rename in it.
+- `TechDesign-<Slug>.md` or `TDD-<Slug>.md` exists → This is an old naming convention, rename to `DecisionTrace-<Slug>.md`. Make a pull request with just the rename in it.
 - No git remote configured → stop hook will fail on push; help user set up remote
 
 ## Clearing The Current Project
