@@ -1,6 +1,6 @@
 ---
 name: dd-teach
-description: Explains the Daydream Dictation process to users. Activates when the user asks how to use Daydream Dictation, asks about the three phases, wants tips for dictation sessions, asks what they should be doing, or needs help with version control during the review cycle.
+description: Explains the Daydream Dictation process to users. Activates when the user asks how to use Daydream Dictation, asks about the three phases, wants tips for Daydream Dictation sessions, asks what they should be doing in the workflow, or needs help with version control during the review cycle. Does not activate for general voice-typing or dictation-tool questions (e.g. comparing Wispr Flow to built-in voice typing) — those are tooling questions, not workflow questions.
 version: 0.1.0
 ---
 
