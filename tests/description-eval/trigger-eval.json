@@ -1,0 +1,24 @@
+[
+  {"query": "Someone on our research team keeps raving about something called Daydream Dictation. What is it and how would I actually use it for policy briefs?", "should_trigger": true},
+  {"query": "Ok I just installed the plugin, Wispr Flow is running on my phone, and I'm outside. What do I actually do to start my first session for this grant application?", "should_trigger": true},
+  {"query": "I tried a dictation session for a zoning memo yesterday and I kept glancing at what you were writing. I lost my flow every time. How do I get past that?", "should_trigger": true},
+  {"query": "Why does this process have three phases? Can't I just have one long conversation with you like normal?", "should_trigger": true},
+  {"query": "I just finished about 40 minutes of talking through the campaign messaging document. What am I supposed to do now?", "should_trigger": true},
+  {"query": "I'm at this github pull request page you keep sending me. I have no idea what I'm looking at. Can you walk me through this phase?", "should_trigger": true},
+  {"query": "What's a gap analysis? My colleague mentioned I should run one on my grant narrative but I don't know what that does in this workflow.", "should_trigger": true},
+  {"query": "I keep getting lost in Phase 2. What am I actually trying to accomplish when I'm responding to your questions?", "should_trigger": true},
+  {"query": "I'm a policy writer and I'm totally new to any kind of AI-assisted workflow. How does this thing actually work, start to finish?", "should_trigger": true},
+  {"query": "I'm halfway through dictating to you about my zoning memo and I'm not sure if I should stop and read what you wrote or keep going. how do I know when to move on to the next phase?", "should_trigger": true},
+
+  {"query": "I'm starting my Phase 2 session now for the transportation grant proposal. Let's talk about the overall funding request and why this project matters.", "should_trigger": false},
+  {"query": "Add a section on stakeholder engagement to the zoning memo, it should cover the community workshops we held in March.", "should_trigger": false},
+  {"query": "Can you help me structure the executive summary for this RFP response? I have the content, just need help with the shape.", "should_trigger": false},
+  {"query": "Run a gap analysis on this campaign messaging document — I want to know what I'm missing before I send it to the comms director.", "should_trigger": false},
+  {"query": "Let's set up a new Daydream project called 'Parks Budget FY27'. I want to start working through the rationale for the aquatics expansion.", "should_trigger": false},
+  {"query": "How do I squash the last three commits on this branch? I want to consolidate them before I push.", "should_trigger": false},
+  {"query": "Can you install the wispr flow plugin for me? I'm having trouble getting it to work with my voice dictation setup.", "should_trigger": false},
+  {"query": "What's the best voice-to-text app for Mac right now? I'm tired of the built-in dictation being bad.", "should_trigger": false},
+  {"query": "How do skills work in Claude Code? Can I install a skill from a local directory without publishing it?", "should_trigger": false},
+  {"query": "I wrote up a draft memo on my own and I want your feedback on the argument structure. Nothing fancy, just read it and tell me what's weak.", "should_trigger": false},
+  {"query": "Do I really need Wispr Flow or can I get by with my laptop's built-in voice typing for these brainstorming sessions?", "should_trigger": false}
+]
