@@ -197,6 +197,10 @@ Override auto-detection by creating `.claude/dd-vcs` with the VCS name.
 
 Create `.claude/dd-voice-variants.md` in your repo to list words your dictation software commonly confuses. See `skills/daydream-dictation/example-voice-variants.md` for the format.
 
+## Contributing
+
+Significant design decisions about the plugin are recorded as Architecture Decision Records in [`docs/decisions/`](docs/decisions/README.md). Read that folder's README before proposing a change that affects how the plugin works, and add an ADR when you make a decision worth remembering.
+
 ## License
 
 MIT
