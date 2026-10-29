@@ -241,7 +241,7 @@ The phases are not a single linear pass. It's normal to cycle multiple times. Wh
 When the user needs help understanding version control as it relates to Phase 3:
 
 - **What a pull request is** — a way to see all the changes from a session collected in one place, with a before/after view
-- **How to open a PR** — the AI creates PRs during the session; show the user the URL
+- **How to open a PR** — ask the AI to open one; it shares the URL with the user
 - **How to read a diff** — green = added, red = removed. They only need to read what changed, not the whole document
 - **How to leave comments** — inline comments on the diff are the feedback mechanism
 - **How to approve and merge** — the final step that makes changes permanent
