@@ -31,11 +31,11 @@ We want a lightweight, repeatable way to record significant decisions about the 
 
 ## Decision Outcome
 
-Chosen option: **MADR**, because it is the only option that is both lightweight and explicitly structured around *considered options and their pros and cons*, which is exactly the "compromises we made" information we want to preserve. It is plain Markdown, needs no tooling, is actively maintained, and is one of the best-known ADR formats.
+Chosen option: **MADR**, because it is the only option that is both lightweight and explicitly structured around *considered options and their pros and cons*, which is exactly the "compromises we made" information we want to preserve. It is plain Markdown, needs no tooling, has a stable current version (MADR 4.0.0, September 2024), and is one of the best-known ADR formats.
 
 We adopt it as follows (details in [`README.md`](README.md)):
 
-* Records live in `docs/decisions/`, named `NNNN-title-in-kebab-case.md`, starting from the [`adr-template.md`](adr-template.md) in that folder (based on the MADR 4 template, trimmed and annotated for this project).
+* Records live in `docs/decisions/`, named `NNNN-title-in-kebab-case.md`, starting from the [`adr-template.md`](adr-template.md) in that folder (based on the MADR 4.0.0 template, trimmed and annotated for this project; we dropped MADR's optional `consulted` and `informed` front-matter fields).
 * Status, date, and decision-makers go in YAML front matter.
 * ADRs are proposed and discussed via pull requests, ideally in the same PR as the change they describe.
 * Accepted ADRs are immutable; changed decisions are recorded by a new ADR that supersedes the old one.
@@ -62,9 +62,9 @@ Reviewers check that PRs making a significant decision (see "When to write an AD
 
 * Good, because its *Considered Options* and *Pros and Cons of the Options* sections directly capture trade-offs and compromises.
 * Good, because it is plain Markdown with optional YAML front matter; no tooling required.
-* Good, because it is actively maintained, well documented, and widely used.
+* Good, because it is well documented and widely used, with a stable release (4.0.0, September 2024) and an active GitHub project.
 * Good, because sections are explicitly optional, so short decisions can stay short.
-* Neutral, because it ships tooling-friendly conventions (front matter, `docs/decisions/` folder) that we can use later if we want.
+* Neutral, because it ships tooling-friendly conventions (YAML front matter, the `docs/decisions/` folder it has recommended since MADR 3.0) that tools such as Log4brains already understand.
 * Bad, because the full template is longer than Nygard's and can feel heavyweight for small decisions.
 
 ### Nygard-style ADRs
@@ -73,12 +73,12 @@ Reviewers check that PRs making a significant decision (see "When to write an AD
 
 * Good, because it is the original and most widely recognized ADR format.
 * Good, because it is extremely short: Title, Status, Context, Decision, Consequences.
-* Good, because tools like `adr-tools` support it.
+* Good, because tools like `adr-tools` use it as their default template.
 * Bad, because it has no dedicated place for alternatives considered; rejected options end up buried in the Context prose or omitted, which works against our main goal of recording compromises.
 
 ### Y-statements
 
-A single structured sentence: "In the context of *use case*, facing *concern*, we decided for *option* and neglected *other options*, to achieve *quality*, accepting *downside*."
+A format created by Olaf Zimmermann: a single structured sentence, "In the context of *use case*, facing *concern*, we decided for *option* and neglected *other options*, to achieve *quality*, accepting *downside*."
 
 * Good, because it is the most concise format and forces the author to name the accepted downside.
 * Bad, because one sentence leaves little room for context, multiple options, or nuanced pros and cons.
@@ -104,5 +104,5 @@ The `DecisionTrace-<Slug>.md` companion document that Daydream Dictation creates
 
 * [adr.github.io](https://adr.github.io/) — overview of ADRs, templates, and tooling.
 * [MADR project and template](https://github.com/adr/madr).
-* Joel Parker Henderson's [architecture-decision-record](https://github.com/joelparkerhenderson/architecture-decision-record) collection of templates and examples.
-* Tooling we chose *not* to adopt for now: [`adr-tools`](https://github.com/npryce/adr-tools) (CLI for Nygard-style records) and [Log4brains](https://github.com/thomvaill/log4brains) (MADR-compatible CLI and static site). Revisit if the number of ADRs grows enough that maintaining the index by hand becomes a burden.
+* The [architecture-decision-record](https://github.com/architecture-decision-record/architecture-decision-record) collection of templates and examples, started by Joel Parker Henderson.
+* Tooling we chose *not* to adopt for now: [`adr-tools`](https://github.com/npryce/adr-tools) (shell CLI for Nygard-style records, default folder `doc/adr`) and [Log4brains](https://github.com/thomvaill/log4brains) (CLI and static-site generator whose default template is MADR). Revisit if the number of ADRs grows enough that maintaining the index by hand becomes a burden.

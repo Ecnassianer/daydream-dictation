@@ -15,7 +15,7 @@ The key ideas:
 - **Append-only history.** Once accepted, an ADR is not rewritten. If we change our minds, we write a *new* ADR that supersedes the old one, so the history of *why* is never lost.
 - **Record the trade-offs, not just the answer.** The rejected options and the downsides of the chosen option are often the most useful part for a future reader.
 
-We use the [MADR](https://adr.github.io/madr/) (Markdown Architectural Decision Records) template. The template for new records is [`adr-template.md`](adr-template.md).
+We use the [MADR](https://adr.github.io/madr/) (Markdown Architectural Decision Records) template, version 4.0.0 ([source on GitHub](https://github.com/adr/madr)). The template for new records is [`adr-template.md`](adr-template.md).
 
 ## When to write an ADR
 
