@@ -43,6 +43,24 @@ def next_entry_number(path: str) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Automated notifications
+# ---------------------------------------------------------------------------
+
+# Claude Code delivers some automated events (background task results, PR
+# webhook activity) into the session as prompts. They aren't user prompts,
+# so they don't belong in any Prompts document.
+_AUTOMATED_PREFIXES = (
+    "<task-notification>",
+    "<github-webhook-activity>",
+)
+
+
+def is_automated_notification(prompt: str) -> bool:
+    """Return True if the prompt is an automated notification, not user input."""
+    return prompt.startswith(_AUTOMATED_PREFIXES)
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -54,7 +72,7 @@ def main() -> None:
         sys.exit(0)
 
     prompt = data.get("prompt", "").strip()
-    if not prompt:
+    if not prompt or is_automated_notification(prompt):
         sys.exit(0)
 
     repo_root = dd.find_repo_root()

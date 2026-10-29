@@ -237,6 +237,35 @@ class TestLogPromptIntegration:
         meta = os.path.join(self.repo, "Prompts-ddMetadiscussion")
         assert not os.path.isfile(meta), "Should not fall back to metadiscussion"
 
+    def test_skips_automated_notifications(self):
+        """Automated notifications delivered as prompts are not logged."""
+        project_dir = self._make_project("TestProj", "Test Proj")
+        self._set_project(project_dir)
+        self._log_prompt("first prompt")
+        r1 = self._log_prompt(
+            "<task-notification>\n<status>pending</status>\n</task-notification>"
+        )
+        r2 = self._log_prompt(
+            "<github-webhook-activity>\nComment: \"looks good\"\n</github-webhook-activity>"
+        )
+        self._log_prompt("second prompt")
+        assert r1.returncode == 0 and r2.returncode == 0
+        prompts = os.path.join(project_dir, "Prompts-TestProj.md")
+        with open(prompts, encoding="utf-8") as f:
+            content = f.read()
+        assert "task-notification" not in content
+        assert "github-webhook-activity" not in content
+        assert "\n2. second prompt\n" in content
+
+    def test_logs_prompt_mentioning_notification_tag(self):
+        """A user prompt that merely mentions the tag is still logged."""
+        project_dir = self._make_project("TestProj", "Test Proj")
+        self._set_project(project_dir)
+        self._log_prompt("why did <task-notification> get logged?")
+        prompts = os.path.join(project_dir, "Prompts-TestProj.md")
+        with open(prompts, encoding="utf-8") as f:
+            assert "1. why did <task-notification> get logged?" in f.read()
+
     def test_exits_zero_on_write_failure(self):
         """T-067: Hook exits 0 even when it can't write."""
         # Point to a nonexistent directory
