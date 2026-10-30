@@ -2,7 +2,7 @@
 """
 dd_lib.py — Shared utilities for Daydream Dictation scripts.
 
-Imported by dd_init_project.py, dd_log_prompt.py, and dd_stop_hook.py.
+Imported by the scripts and hooks, including dd_prompt_log.py.
 """
 
 import os

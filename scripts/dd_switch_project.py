@@ -11,7 +11,7 @@ Resolves the project folder, verifies it exists with the expected files
 (Daydream-<Slug>.md, TODO-<Slug>.md, Prompts-<Slug>.md), and writes the
 folder path to dd-current-dictation-project at the repo root.
 
-With --clear, writes an empty string (prompts log to Prompts-ddMetadiscussion).
+With --clear, writes an empty string (prompts are not logged until a project is set).
 """
 
 import os
@@ -35,7 +35,7 @@ def main() -> None:
         current_project_path = os.path.join(repo_root, "dd-current-dictation-project")
         with open(current_project_path, "w", encoding="utf-8") as f:
             f.write("")
-        print("Cleared dd-current-dictation-project (prompts -> Prompts-ddMetadiscussion)")
+        print("Cleared dd-current-dictation-project (prompts are not logged until a project is set)")
         return
 
     name = " ".join(args).strip()

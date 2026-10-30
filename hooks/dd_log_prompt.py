@@ -2,121 +2,40 @@
 """
 dd_log_prompt.py — UserPromptSubmit hook for Daydream Dictation.
 
-Fires on every prompt. Appends a numbered entry to the active project's
-Prompts document, or to Prompts-ddMetadiscussion if no project is active.
+Registered in the daydream-dictation skill's frontmatter, so it runs only
+while the skill is active (ADR-0002). Appends a numbered entry to the active
+project's Prompts document. With no active project it logs nothing (ADR-0003).
 
-Active project is read from dd-current-dictation-project at the repo root.
-That file contains the absolute path to the project folder; this hook
-resolves the Prompts file inside it dynamically.
+Before logging, it backfills any prompts a session-start or resume marker is
+holding (ADR-0005), so entries stay in order.
 """
 
-import glob as glob_module
-import json
 import os
-import re
 import sys
 
-# Import dd_lib from the scripts/ directory alongside hooks/
-_PLUGIN_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Import the shared libraries from the scripts/ directory alongside hooks/
+_PLUGIN_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(_PLUGIN_ROOT, "scripts"))
 import dd_lib as dd
+import dd_prompt_log as pl
 
-
-# ---------------------------------------------------------------------------
-# Entry numbering
-# ---------------------------------------------------------------------------
-
-def next_entry_number(path: str) -> int:
-    """Return the next prompt number by counting lines matching '^N. '.
-
-    Uses '^[0-9]+\\. ' so multi-line prompt text, code blocks, and other
-    lines that happen to start with a digit don't inflate the count.
-    """
-    if not os.path.isfile(path):
-        return 1
-    count = 0
-    with open(path, encoding="utf-8") as f:
-        for line in f:
-            if re.match(r'^\d+\. ', line):
-                count += 1
-    return count + 1
-
-
-# ---------------------------------------------------------------------------
-# Automated notifications
-# ---------------------------------------------------------------------------
-
-# Claude Code delivers some automated events (background task results, PR
-# webhook activity) into the session as prompts. They aren't user prompts,
-# so they don't belong in any Prompts document.
-_AUTOMATED_PREFIXES = (
-    "<task-notification>",
-    "<github-webhook-activity>",
-)
-
-
-def is_automated_notification(prompt: str) -> bool:
-    """Return True if the prompt is an automated notification, not user input."""
-    return prompt.startswith(_AUTOMATED_PREFIXES)
-
-
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
 
 def main() -> None:
-    raw = sys.stdin.read()
-    try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        sys.exit(0)
-
-    prompt = data.get("prompt", "").strip()
-    if not prompt or is_automated_notification(prompt):
+    data = pl.read_hook_input()
+    prompt = str(data.get("prompt", "")).strip()
+    if not prompt or pl.is_automated_notification(prompt):
         sys.exit(0)
 
     repo_root = dd.find_repo_root()
-
-    # Determine target Prompts document
-    prompts_doc = None
-    state_file = os.path.join(repo_root, "dd-current-dictation-project")
-    if os.path.isfile(state_file):
-        with open(state_file, encoding="utf-8") as f:
-            project_folder = f.read().strip()
-        if project_folder and os.path.isdir(project_folder):
-            # Project is set and folder exists — route here, creating the Prompts file if needed
-            matches = sorted(glob_module.glob(os.path.join(project_folder, "Prompts-*")))
-            if matches:
-                prompts_doc = matches[0]
-            else:
-                # Derive slug from folder name and create the Prompts file
-                slug = os.path.basename(project_folder.rstrip("/"))
-                prompts_doc = os.path.join(project_folder, f"Prompts-{slug}.md")
-                if not os.path.isfile(prompts_doc):
-                    with open(prompts_doc, "w", encoding="utf-8") as f:
-                        f.write(f"# Prompts \u2014 {slug}\n\n---\n\n")
-
-    if prompts_doc is None:
-        prompts_doc = os.path.join(repo_root, "Prompts-ddMetadiscussion")
-        if not os.path.isfile(prompts_doc):
-            with open(prompts_doc, "w", encoding="utf-8") as f:
-                f.write("# Prompts \u2014 ddMetadiscussion\n\n---\n\n")
-
-    # Append numbered entry
-    entry_num = next_entry_number(prompts_doc)
-    entry = f"\n{entry_num}. {prompt}\n"
-
     try:
-        with open(prompts_doc, "a", encoding="utf-8") as f:
-            f.write(entry)
+        pl.backfill(data, repo_root, current_prompt=prompt)
+        prompts_doc = pl.active_prompts_doc(repo_root)
+        if prompts_doc is not None:
+            pl.append_entry(prompts_doc, prompt)
     except OSError as e:
-        print(
-            f"dd-log-prompt: WARNING — could not write to {prompts_doc}: {e}",
-            file=sys.stderr,
-        )
-        # Always exit 0 — hook must never block the session (T-067)
-        sys.exit(0)
+        print(f"dd-log-prompt: WARNING — could not log prompt: {e}", file=sys.stderr)
 
+    # Always exit 0 — this hook must never block the session (T-067)
     sys.exit(0)
 
 
