@@ -10,7 +10,7 @@ decision-makers: Ecnassianer
 
 `hooks/dd_stop_hook.py` is registered plugin-wide. In any repo, it blocks Claude from stopping while there are uncommitted changes, untracked files or unpushed commits. That's the same "machinery outside dictation sessions" problem as prompt logging, only more intrusive.
 
-The resume backfill ([ADR-0005](0005-recover-prompts-after-a-resumed-session.md)) also creates a new situation. When the backfill runs in `Stop`, it writes Prompts entries after Claude's last commit of the turn. Those entries must still be committed according to the skill's commit discipline: commit after every set of changes, push immediately, and keep prompt entries with the work they accompany. Claude doesn't get involved in that decision.
+The session-start and resume backfill ([ADR-0005](0005-recover-prompts-after-a-resumed-session.md)) also creates a new situation. When the backfill runs in `Stop`, it writes Prompts entries after Claude's last commit of the turn. Those entries must still be committed according to the skill's commit discipline: commit after every set of changes, push immediately, and keep prompt entries with the work they accompany. Claude doesn't get involved in that decision.
 
 The plugin supports Git, Mercurial, Perforce and Unity VCS / Plastic through `dd_lib.detect_vcs()`, plus a `custom` mode where Claude manages commits.
 
@@ -31,14 +31,16 @@ The plugin supports Git, Mercurial, Perforce and Unity VCS / Plastic through `dd
 
 Chosen option: **one skill-scoped `Stop` hook**, registered in the `daydream-dictation` SKILL.md frontmatter ([ADR-0002](0002-scope-dictation-hooks-to-the-active-skill.md)). It runs these steps in order:
 
-1. **Backfill** if a resume marker exists ([ADR-0005](0005-recover-prompts-after-a-resumed-session.md)).
+1. **Backfill** if a session-start or resume marker exists and a project is set ([ADR-0005](0005-recover-prompts-after-a-resumed-session.md)).
 2. **Commit the backfilled entries**, chosen deterministically from VCS state:
 
    | Situation | Action |
    | --- | --- |
-   | Git, `HEAD` unchanged since the marker | Own commit ("Backfill N prompt(s) after resume") and push |
-   | Git, `HEAD` moved and the new commit isn't on any remote branch | `git commit --amend --no-edit --only <Prompts doc>`, then push |
-   | Git, `HEAD` moved and Claude already pushed | Own commit and push; never amend a pushed commit |
+   | Git, `HEAD` was committed before the first backfilled prompt was sent | Own commit ("Log session-start prompt" or "Backfill N prompt(s) after resume") and push |
+   | Git, `HEAD` was committed after the first backfilled prompt and isn't on any remote branch | `git commit --amend --no-edit --only <Prompts doc>`, then push |
+   | Git, `HEAD` was committed after the first backfilled prompt but Claude already pushed it | Own commit and push; never amend a pushed commit |
+
+   "After the first backfilled prompt" compares `HEAD`'s committer time with that prompt's timestamp in the transcript. It works the same for both marker kinds, including a session-start marker created after Claude's first commit.
    | Mercurial, Perforce, Unity VCS | Own commit and push through the existing `dd_lib.checkpoint()` |
    | `custom` / no VCS | Write the entries, don't commit; the skill's guidance covers it |
 

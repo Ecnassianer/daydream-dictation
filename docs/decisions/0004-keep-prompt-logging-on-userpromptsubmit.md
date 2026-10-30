@@ -22,21 +22,21 @@ Neither repo records why `UserPromptSubmit` was originally chosen. It dates to t
 
 ## Considered Options
 
-* Log on `UserPromptSubmit`; use `Stop` only for resume backfill
+* Log on `UserPromptSubmit`; use the transcript only to backfill the session-start and resume gaps
 * Log everything on `Stop` by syncing new prompts from the transcript
 
 ## Decision Outcome
 
-Chosen option: **keep logging on `UserPromptSubmit`**, and use the transcript only to backfill prompts that arrive while the hooks are missing after a resume ([ADR-0005](0005-recover-prompts-after-a-resumed-session.md)).
+Chosen option: **keep logging on `UserPromptSubmit`**, and use the transcript only to backfill the prompts that arrive while the hooks can't log them: the prompt that starts the session, and prompts after a resume ([ADR-0005](0005-recover-prompts-after-a-resumed-session.md)).
 
 All hooks that write to the Prompts doc use one shared module (for example `scripts/dd_prompt_log.py`) for:
 
 * resolving the active project's Prompts doc from `dd-current-dictation-project`;
 * entry numbering (`^N. ` lines only);
 * filtering automated notifications (`<task-notification>`, `<github-webhook-activity>`) and non-prompt transcript entries;
-* writing numbered entries, backfilled entries and resume notes;
+* writing numbered entries, backfilled entries, and session-start and resume notes;
 * reading user prompts from the transcript;
-* creating, reading and clearing the resume marker.
+* creating, reading and clearing the session-start and resume markers, and the per-session state file.
 
 Each hook script stays a thin wrapper that reads its hook input and calls the library.
 
@@ -55,10 +55,10 @@ Each hook script stays a thin wrapper that reads its hook input and calls the li
 
 ## Pros and Cons of the Options
 
-### Log on `UserPromptSubmit`, `Stop` only for backfill
+### Log on `UserPromptSubmit`, transcript only for backfill
 
 * Good, for the reasons in *Consequences*.
-* Neutral, because transcript parsing is still needed, but only on the resume path.
+* Neutral, because transcript parsing is still needed, but only to fill the session-start and resume gaps.
 
 ### Log everything on `Stop` from the transcript
 

@@ -39,13 +39,14 @@ Behavior we verified with Claude Code 2.1.312 (headless `claude -p`, project and
 | Event | Skill-scoped hooks |
 | --- | --- |
 | Prompts before the skill is invoked | Don't fire |
-| The prompt that invokes the skill | `UserPromptSubmit` doesn't fire (hooks register after it's submitted); `Stop` does fire at the end of that turn |
+| The prompt that invokes the skill | `UserPromptSubmit` doesn't fire (hooks register after it's submitted); `Stop` does fire at the end of that turn, and the transcript holds the full prompt, including the text typed after `/daydream-dictation` |
 | Later prompts in the same session | Fire every turn |
 | Invoking the skill a second time | Hooks are not registered twice |
 | `/compact` | Hooks survive |
 | `/clear` | Hooks are removed |
 | `--resume` / `--continue` | Hooks are gone until the skill is invoked again |
 | Exit code 2 from a skill `Stop` hook | Blocks stopping, same as a settings hook; `stop_hook_active` is set on the follow-up |
+| `once: true` on a skill hook | Runs once after invocation; a failing run stays registered and retries at the next event. Not used: hooks for the same event run in parallel, so a separate one-shot `Stop` hook would race the main one |
 
 ### Consequences
 
@@ -53,8 +54,7 @@ Behavior we verified with Claude Code 2.1.312 (headless `claude -p`, project and
 * Good, because `/clear` ends the dictation hooks, which matches the user's intent: the skill's context is gone too.
 * Good, because the hooks travel with the skill definition instead of being wired separately.
 * Bad, because the skill must actually be *invoked* (with `/daydream-dictation` or by Claude through the Skill tool). Telling Claude to read `SKILL.md` by path, as the current manual/Cloud install does, never registers the hooks. That install method has to change.
-* Bad, because the prompt that starts the session isn't logged. We accept this: it's usually just "let's start a Daydream Dictation session".
-* Bad, because resumed sessions lose the hooks; see [ADR-0005](0005-recover-prompts-after-a-resumed-session.md).
+* Bad, because the prompt that invokes the skill misses `UserPromptSubmit`, and so does a resumed session until the skill is invoked again. Both gaps are filled from the transcript; see [ADR-0005](0005-recover-prompts-after-a-resumed-session.md).
 * Bad, because a skill that declares hooks needs permission when *Claude* invokes it. In headless tests the Skill call failed with no content until `Skill` was allowed. Typed `/daydream-dictation` works without it. Users who want Claude to invoke the skill on its own (including the resume nudge) should add an allow rule such as `Skill(daydream-dictation:daydream-dictation)`. This behavior isn't documented, so we should re-check it on new Claude Code versions.
 * Bad, because skill-scoped hooks are a Claude Code extension. Other agents that read the Agent Skills format ignore unknown frontmatter, so they get no logging and no commit enforcement. Today's `hooks/hooks.json` is Claude Code–only as well, so this doesn't lose anything we had.
 * Neutral, because `${CLAUDE_PLUGIN_ROOT}` means different things to a skill hook depending on how the skill is installed: the plugin root for a plugin skill, but the skill's own directory for a project skill. `${CLAUDE_SKILL_DIR}` isn't expanded in hook commands, and `${CLAUDE_PLUGIN_DATA}` is rejected for skill hooks. The hook command must resolve the plugin root itself in both cases, following symlinks.
