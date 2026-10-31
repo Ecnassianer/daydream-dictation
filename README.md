@@ -105,7 +105,7 @@ This creates the project folder and files if they don't exist, sets it as the ac
 
 Analyzes the current project's documents for missing coverage, open TODOs, and implementation gaps. It also checks whether the document is what it says it is, and suggests a restructure plan when it isn't.
 
-The core questions apply to every document. Questions that only make sense for one kind of document live in `skills/dd-gap-analysis/references/`, and the analysis uses them only when the document is that kind: game design documents, staffing plans, and media requiring translation. To support a new kind of document, add a reference file there and a row to the table in the skill's *How to Execute* section.
+The core questions apply to every document. Questions that only make sense for one kind of document live in `skills/dd-gap-analysis/references/`, and the analysis uses them only when the document is that kind: game design documents, letters, staffing plans, and media requiring translation. To support a new kind of document, add a reference file there and a row to the table in the skill's *How to Execute* section.
 
 ### Learn the process
 

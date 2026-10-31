@@ -1,6 +1,6 @@
 ---
 name: dd-gap-analysis
-description: Run a structured gap analysis on a design document, staffing plan, or any other document or project folder. Use when asked to check what's missing, find gaps, or review completeness of a document.
+description: Run a structured gap analysis on a design document, letter, staffing plan, or any other document or project folder. Use when asked to check what's missing, find gaps, or review completeness of a document.
 argument-hint: "[project folder or name]"
 license: MIT
 metadata:
@@ -15,7 +15,7 @@ A standalone skill that analyzes documents for gaps, missing coverage, and open 
 The analysis has two layers:
 
 - **Core questions** (below) apply to every document.
-- **Document-type questions** come from a reference file in `references/` and apply only when the document is that type. They hold everything that only makes sense for one kind of document, so a staffing plan never gets asked about player controls.
+- **Document-type questions** come from a reference file in `references/` and apply only when the document is that type. They hold everything that only makes sense for one kind of document, so a letter never gets asked about player controls.
 
 ## How to Execute
 
@@ -37,6 +37,7 @@ The analysis has two layers:
    | Type | Reference file | Signals |
    | --- | --- | --- |
    | Game design document | [references/game-design-document.md](references/game-design-document.md) | Describes a video game, tabletop game, or other playable experience: players, mechanics, levels, controls, game loops |
+   | Letter | [references/letter.md](references/letter.md) | Addressed to a reader: a salutation, a sign-off, a cover letter, an email, a memo, an open letter |
    | Staffing plan | [references/staffing-plan.md](references/staffing-plan.md) | Argues for adding people to a team: headcount, roles, hiring, budget, capacity |
    | Media requiring translation | [references/media-requiring-translation.md](references/media-requiring-translation.md) | Has a `StringTable-<Slug>.md` or other localization files, or names more than one supported language. Often matches alongside another type, such as a game |
 
@@ -68,7 +69,7 @@ Beyond what's missing — where does the existing document feel unclear, inconsi
 
 ### What will the reader need to know to act on this?
 
-Work out who acts on this document next — an implementing agent, a manager approving a request — and what they will do with it. Then identify anything that reader would find ambiguous or underspecified. What decisions would they have to make on their own because the document doesn't answer them? Does the document call out open decisions? Does the user want to make them now?
+Work out who acts on this document next — an implementing agent, a recipient, a manager approving a request — and what they will do with it. Then identify anything that reader would find ambiguous or underspecified. What decisions would they have to make on their own because the document doesn't answer them? Does the document call out open decisions? Does the user want to make them now?
 
 If the project has a `DecisionTrace-<Slug>.md`, check whether it covers the technical decisions needed to implement the design. If no Decision Trace exists and the project has enough technical complexity to warrant one, note that.
 
