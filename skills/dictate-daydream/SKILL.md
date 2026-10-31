@@ -2,7 +2,9 @@
 name: dictate-daydream
 description: Alias for /daydream-dictation. Starts a Daydream Dictation session.
 argument-hint: "[project name]"
-version: 0.1.0
+license: MIT
+metadata:
+  version: "0.1.0"
 ---
 
 # Dictate Daydream

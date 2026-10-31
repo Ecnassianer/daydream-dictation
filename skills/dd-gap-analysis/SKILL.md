@@ -2,11 +2,10 @@
 name: dd-gap-analysis
 description: Run a structured gap analysis on any design document or project folder. Use when asked to check what's missing, find gaps, or review completeness of a design.
 argument-hint: "[project folder or name]"
-version: 0.1.0
-allowed-tools:
-  - Read
-  - Glob
-  - Grep
+license: MIT
+metadata:
+  version: "0.1.0"
+allowed-tools: Read Glob Grep
 ---
 
 # Gap Analysis
@@ -16,9 +15,9 @@ A standalone skill that analyzes design documents for gaps, missing coverage, an
 ## How to Execute
 
 1. Resolve the target project:
-   - If `$ARGUMENTS` names a project, find its folder
-   - If `$ARGUMENTS` is a path, use it directly
-   - If empty, read `dd-current-dictation-project` for the active project
+   - If the user named a project (in their message or as arguments to this skill), find its folder
+   - If the user gave a path, use it directly
+   - If neither, read `dd-current-dictation-project` for the active project
    - If still nothing, ask the user which project to analyze
 
 2. Read the project's documents:

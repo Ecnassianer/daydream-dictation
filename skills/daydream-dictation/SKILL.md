@@ -1,14 +1,11 @@
 ---
 name: daydream-dictation
 description: Voice-driven document authoring using the Daydream Dictation workflow. Activates when the user is dictating design documents, mentions a Daydream project, refers to Prompts documents or dd-current-dictation-project, or starts a dictation session.
-version: 0.1.0
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Glob
-  - Grep
+license: MIT
+compatibility: Requires Python 3 and a supported VCS (git, Mercurial, Perforce or Unity Version Control). Prompt logging and commit checks use Claude Code skill hooks; other agents run the skill without them.
+metadata:
+  version: "0.1.0"
+allowed-tools: Read Write Edit Bash Glob Grep
 # Prompt logging and commit checks run only while this skill is active
 # (docs/decisions/0002). ${CLAUDE_PLUGIN_ROOT} is the plugin root for both
 # supported installs: a marketplace install and CLAUDE_CODE_PLUGIN_DIRS.
