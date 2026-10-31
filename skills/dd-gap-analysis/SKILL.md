@@ -39,6 +39,7 @@ The analysis has two layers:
    | Game design document | [references/game-design-document.md](references/game-design-document.md) | Describes a video game, tabletop game, or other playable experience: players, mechanics, levels, controls, game loops |
    | Letter | [references/letter.md](references/letter.md) | Addressed to a specific recipient: a salutation, a sign-off, a cover letter, an email, a memo, an open letter |
    | Staffing plan | [references/staffing-plan.md](references/staffing-plan.md) | Argues for adding people to a team: headcount, roles, hiring, budget, capacity |
+   | Media requiring translation | [references/media-requiring-translation.md](references/media-requiring-translation.md) | Has a `StringTable-<Slug>.md` or other localization files, or names more than one supported language. Often matches alongside another type, such as a game |
 
    - A document can match more than one type. A game pitch with a hiring section matches both game design document and staffing plan. Use every reference that matches.
    - If nothing matches, run the core questions only. Don't borrow questions from a reference that doesn't fit.

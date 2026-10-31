@@ -10,7 +10,7 @@ Read this file only during a `dd-gap-analysis` run, and only when the document d
 - **Controls and input** for every platform and every game state.
 - **Content scope.** Levels, characters, items, and other assets, with counts or at least a list.
 - **Target audience and platforms.**
-- **Text, localization, and accessibility** plans when the game ships with text or to more than one language.
+- **Accessibility** plans.
 
 ## Questions
 
@@ -19,10 +19,6 @@ Ask these after the core *reader needs* question, in this order.
 ### Are there missing control definitions?
 
 Are the player controls fully defined? Are all inputs accounted for across all relevant states (menus, gameplay, pause, dialogue, death, and so on) and every supported input device? Skip this question if the game has no real-time input, such as a game played entirely on paper.
-
-### Are there untranslated strings?
-
-If the project has a `StringTable-<Slug>.md` or other localization files, check for completeness: are there strings missing translations for any supported language? Are there strings referenced in the design doc that don't have string table entries? If gaps exist, ask: should translation happen now, or is it deferred? Skip this question if the project has no localization.
 
 ### Is the core loop clear?
 
