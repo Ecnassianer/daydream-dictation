@@ -55,7 +55,7 @@ When the user tells you which project to work on:
    ```
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
 2. **Read the project's instructions** — if the project folder has an `AGENTS.md`, read it and follow it for the whole session. Older projects may have a `CLAUDE.md` instead; read that if there is no `AGENTS.md`.
-3. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `${CLAUDE_SKILL_DIR}/example-voice-variants.md` for the expected format.
+3. **Load commonly confused words** — check for `.agents/dd-voice-variants.md` at the repo root, or the legacy `.claude/dd-voice-variants.md` if there's no `.agents/` copy. If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `${CLAUDE_SKILL_DIR}/example-voice-variants.md` for the expected format.
 4. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
 5. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
 6. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
@@ -79,7 +79,7 @@ The file is not automatically cleared between sessions — it persists. Always u
 
 Runs the session-start workflow:
 
-1. Load commonly confused words from `.claude/dd-voice-variants.md` if present
+1. Load commonly confused words from `.agents/dd-voice-variants.md` (or the legacy `.claude/dd-voice-variants.md`) if present
 2. If no project is specified, ask the user which project they're working on
 3. If the project doesn't exist, run `dd_init_project.py` to create it
 4. Run `dd_switch_project.py` to set the active project (skip if `dd_init_project.py` just ran — it switches automatically)
@@ -215,11 +215,11 @@ The script creates `<Slug>/Daydream-<Slug>.md`, `TODO-<Slug>.md`, `Prompts-<Slug
 
 If the folder already exists, don't re-run the script — use `dd_switch_project.py` to set the active project. It verifies that the expected files exist.
 
-**Project root resolution:** CLI `--project-root` → `.claude/dd-projects-root` file → repo root.
+**Project root resolution:** CLI `--project-root` → `.agents/dd-projects-root` file (or the legacy `.claude/dd-projects-root`) → repo root.
 
 ### Custom Project Root
 
-By default, project folders are created at the repo root. If a user wants all Daydream projects in a subdirectory (e.g., `docs/` or `design/`), they can create `.claude/dd-projects-root` containing the absolute path to that directory. This is useful for repos where the root is cluttered or where design documents belong in a specific subtree. The file is a single line — just the path, no other syntax.
+By default, project folders are created at the repo root. If a user wants all Daydream projects in a subdirectory (e.g., `docs/` or `design/`), they can create `.agents/dd-projects-root` containing the absolute path to that directory. This is useful for repos where the root is cluttered or where design documents belong in a specific subtree. The file is a single line — just the path, no other syntax.
 
 ### Error Recovery
 
@@ -321,7 +321,7 @@ Version control is **required**. The diff review phase depends on being able to 
 
 ### Detection Order (first match wins)
 
-1. `.claude/dd-vcs` file — user-supplied override
+1. `.agents/dd-vcs` file (or the legacy `.claude/dd-vcs`) — user-supplied override
 2. Auto-detection: `.git/` → git; `.hg/` → hg; `.plastic/` → unity-vcs; `.p4config` or `P4CONFIG` env var → perforce
 3. Nothing detected → ask the user; if they don't know, walk them through setting up Git
 
@@ -330,4 +330,6 @@ Version control is **required**. The diff review phase depends on being able to 
 ## The `dd-` Naming Prefix
 
 Any file or artifact that lives outside a project folder and is part of the Daydream Dictation system must be prefixed with `dd-`. This distinguishes skill infrastructure from the user's work.
+
+Repo-level config files (`dd-vcs`, `dd-projects-root`, `dd-voice-variants.md`) live in `.agents/` at the repo root. Older repos keep them in `.claude/`, which is still read when there's no `.agents/` copy. When you create one of these files, put it in `.agents/`.
 

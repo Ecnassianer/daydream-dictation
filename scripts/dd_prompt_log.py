@@ -12,7 +12,9 @@ A *marker* means "user prompts in the transcript from this position onward
 haven't been logged yet". It is either a `start` marker (the prompt that
 invoked the skill) or a `resume` marker (prompts after --resume/--continue).
 Markers and per-session state live outside the repo, under
-~/.claude/daydream-dictation/sessions/.
+$XDG_STATE_HOME/daydream-dictation/sessions/ (by default
+~/.local/state/daydream-dictation/sessions/). State left in the legacy
+~/.claude/daydream-dictation/sessions/ is picked up and moved (ADR-0009).
 """
 
 from __future__ import annotations
@@ -229,8 +231,23 @@ def state_dir() -> str:
     override = os.environ.get("DD_STATE_DIR")
     if override:
         return override
+    base = os.environ.get("XDG_STATE_HOME") or os.path.join(os.path.expanduser("~"), ".local", "state")
+    return os.path.join(base, "daydream-dictation", "sessions")
+
+
+def legacy_state_dir() -> str | None:
+    """Where state lived before ADR-0009, or None when DD_STATE_DIR is set.
+
+    Read only to carry a session that started before the move across it.
+    """
+    if os.environ.get("DD_STATE_DIR"):
+        return None
     config = os.environ.get("CLAUDE_CONFIG_DIR") or os.path.join(os.path.expanduser("~"), ".claude")
     return os.path.join(config, "daydream-dictation", "sessions")
+
+
+def _state_filename(session_id: str) -> str:
+    return f"{re.sub(r'[^A-Za-z0-9_-]', '_', session_id)}.json"
 
 
 @contextmanager
@@ -242,11 +259,21 @@ def session_state(session_id: str):
     """
     directory = state_dir()
     os.makedirs(directory, exist_ok=True)
-    path = os.path.join(directory, f"{re.sub(r'[^A-Za-z0-9_-]', '_', session_id)}.json")
+    path = os.path.join(directory, _state_filename(session_id))
+    legacy = legacy_state_dir()
+    legacy_path = os.path.join(legacy, _state_filename(session_id)) if legacy else None
     with open(path, "a+", encoding="utf-8") as f:
         fcntl.flock(f, fcntl.LOCK_EX)
         f.seek(0)
         raw = f.read()
+        if not raw.strip() and legacy_path and os.path.isfile(legacy_path):
+            # A session that started before the state folder moved.
+            try:
+                with open(legacy_path, encoding="utf-8") as old:
+                    raw = old.read()
+                os.remove(legacy_path)
+            except OSError:
+                pass
         try:
             state = json.loads(raw) if raw.strip() else {}
         except json.JSONDecodeError:
@@ -258,16 +285,16 @@ def session_state(session_id: str):
 
 
 def cleanup_stale_state(max_age: int = STALE_STATE_SECONDS) -> None:
-    directory = state_dir()
-    if not os.path.isdir(directory):
-        return
     cutoff = time.time() - max_age
-    for path in glob_module.glob(os.path.join(directory, "*.json")):
-        try:
-            if os.path.getmtime(path) < cutoff:
-                os.remove(path)
-        except OSError:
-            pass
+    for directory in (state_dir(), legacy_state_dir()):
+        if not directory or not os.path.isdir(directory):
+            continue
+        for path in glob_module.glob(os.path.join(directory, "*.json")):
+            try:
+                if os.path.getmtime(path) < cutoff:
+                    os.remove(path)
+            except OSError:
+                pass
 
 
 def _now_iso() -> str:

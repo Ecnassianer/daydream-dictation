@@ -397,3 +397,54 @@ class TestLibrary:
         assert pl.append_entry(str(doc), "first") == 1
         pl.append_note(str(doc), "⟳ Session resumed")
         assert pl.append_entry(str(doc), "second", "backfilled after resume") == 2
+
+
+class TestStateDir:
+    """Session state moved out of ~/.claude (ADR-0009)."""
+
+    @pytest.fixture
+    def dirs(self, tmp_path, monkeypatch):
+        monkeypatch.delenv("DD_STATE_DIR", raising=False)
+        monkeypatch.setenv("XDG_STATE_HOME", str(tmp_path / "state"))
+        monkeypatch.setenv("CLAUDE_CONFIG_DIR", str(tmp_path / "claude"))
+        new = tmp_path / "state" / "daydream-dictation" / "sessions"
+        legacy = tmp_path / "claude" / "daydream-dictation" / "sessions"
+        return new, legacy
+
+    def test_default_is_under_xdg_state_home(self, dirs):
+        new, _ = dirs
+        assert pl.state_dir() == str(new)
+
+    def test_dd_state_dir_overrides_and_disables_legacy(self, dirs, tmp_path, monkeypatch):
+        monkeypatch.setenv("DD_STATE_DIR", str(tmp_path / "custom"))
+        assert pl.state_dir() == str(tmp_path / "custom")
+        assert pl.legacy_state_dir() is None
+
+    def test_legacy_session_state_is_carried_over(self, dirs):
+        new, legacy = dirs
+        legacy.mkdir(parents=True)
+        (legacy / "sess-1.json").write_text(json.dumps({"start_handled": True}))
+        with pl.session_state("sess-1") as state:
+            assert state.get("start_handled") is True
+        assert not (legacy / "sess-1.json").exists()
+        assert json.loads((new / "sess-1.json").read_text())["start_handled"] is True
+
+    def test_new_state_wins_over_legacy(self, dirs):
+        new, legacy = dirs
+        new.mkdir(parents=True)
+        legacy.mkdir(parents=True)
+        (new / "sess-2.json").write_text(json.dumps({"start_handled": True}))
+        (legacy / "sess-2.json").write_text(json.dumps({"start_handled": False}))
+        with pl.session_state("sess-2") as state:
+            assert state.get("start_handled") is True
+
+    def test_cleanup_removes_stale_files_in_both_folders(self, dirs):
+        new, legacy = dirs
+        for d in (new, legacy):
+            d.mkdir(parents=True)
+            stale = d / "old.json"
+            stale.write_text("{}")
+            os.utime(stale, (0, 0))
+        pl.cleanup_stale_state()
+        assert not (new / "old.json").exists()
+        assert not (legacy / "old.json").exists()
