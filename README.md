@@ -16,7 +16,7 @@ Use `/dd-teach` to learn the process interactively, tailored to your experience 
 
 ### Prerequisites
 
-- Python 3.9+
+- Python 3.9+, on PATH as `python3`, `python` or (on Windows) the `py` launcher. The hooks use whichever one runs Python 3 ([ADR-0011](docs/decisions/0011-find-python-with-a-launcher-script.md)).
 - Git (or another supported VCS)
 - Claude Code 2.1.94 or later (earlier versions silently ignore hooks in a plugin skill's frontmatter)
 
@@ -180,6 +180,8 @@ Run the tests with:
 pip install pytest
 python3 -m pytest tests/ -v
 ```
+
+On Windows, use `python` or `py -3` in place of `python3`.
 
 ## License
 

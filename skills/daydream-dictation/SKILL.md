@@ -9,21 +9,23 @@ allowed-tools: Read Write Edit Bash Glob Grep
 # Prompt logging and commit checks run only while this skill is active
 # (docs/decisions/0002). ${CLAUDE_PLUGIN_ROOT} is the plugin root for both
 # supported installs: a marketplace install and CLAUDE_CODE_PLUGIN_DIRS.
+# dd_python.sh picks python3, python or py -3, whichever runs Python 3
+# (docs/decisions/0011).
 hooks:
   UserPromptSubmit:
     - hooks:
         - type: command
-          command: 'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/dd_log_prompt.py"'
+          command: 'sh "${CLAUDE_PLUGIN_ROOT}/hooks/dd_python.sh" "${CLAUDE_PLUGIN_ROOT}/hooks/dd_log_prompt.py"'
           timeout: 10
   Stop:
     - hooks:
         - type: command
-          command: 'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/dd_stop_hook.py"'
+          command: 'sh "${CLAUDE_PLUGIN_ROOT}/hooks/dd_python.sh" "${CLAUDE_PLUGIN_ROOT}/hooks/dd_stop_hook.py"'
           timeout: 60
   StopFailure:
     - hooks:
         - type: command
-          command: 'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/dd_stop_failure_hook.py"'
+          command: 'sh "${CLAUDE_PLUGIN_ROOT}/hooks/dd_python.sh" "${CLAUDE_PLUGIN_ROOT}/hooks/dd_stop_failure_hook.py"'
           timeout: 60
 ---
 
@@ -34,6 +36,8 @@ This skill covers voice parsing, prompt logging, commit discipline, and project 
 If the user asks questions about the process itself — "what is Phase 1?", "how does this work?", "what should I do next?" — activate the `/dd-teach` skill to handle the explanation.
 
 **Script paths.** The `scripts/` and `references/` paths in this skill are relative to this skill's own folder (the base directory you were given when the skill loaded), not to the repo. Commands run from the repo root, so always run a script by its absolute path: this skill's folder followed by `scripts/<name>.py`.
+
+**Python command.** The commands in this skill say `python3`. If `python3` is not found, or it doesn't run Python 3 (on Windows it is often missing or a Microsoft Store stub that only prints an install hint), run the same command with `python` instead, then with `py -3`. Keep using whichever one works for the rest of the session.
 
 ---
 
