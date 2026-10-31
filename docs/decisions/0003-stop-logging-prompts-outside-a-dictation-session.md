@@ -1,6 +1,6 @@
 ---
-status: proposed
-date: 2026-10-29
+status: accepted
+date: 2026-10-31
 decision-makers: Ecnassianer
 ---
 

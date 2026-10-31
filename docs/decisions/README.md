@@ -61,9 +61,9 @@ Fixing typos, broken links, or formatting in an old ADR is fine.
 | ADR | Title | Status |
 | --- | --- | --- |
 | [0001](0001-use-madr-for-architecture-decision-records.md) | Use MADR for architecture decision records | accepted |
-| [0002](0002-scope-dictation-hooks-to-the-active-skill.md) | Scope dictation hooks to the active daydream-dictation skill | proposed |
-| [0003](0003-stop-logging-prompts-outside-a-dictation-session.md) | Stop logging prompts outside a dictation session | proposed |
-| [0004](0004-keep-prompt-logging-on-userpromptsubmit.md) | Keep prompt logging on UserPromptSubmit, with one shared prompt-log library | proposed |
-| [0005](0005-recover-prompts-after-a-resumed-session.md) | Log the session-start prompt and recover prompts after a resume with marker-driven backfill | proposed |
-| [0006](0006-merge-commit-enforcement-into-the-skill-stop-hook.md) | Merge commit enforcement into the skill's Stop hook, and commit backfilled prompts per the skill's commit discipline | proposed |
-| [0007](0007-load-the-plugin-in-cloud-sessions-with-claude-code-plugin-dirs.md) | Load the plugin in cloud sessions with CLAUDE_CODE_PLUGIN_DIRS | proposed |
+| [0002](0002-scope-dictation-hooks-to-the-active-skill.md) | Scope dictation hooks to the active daydream-dictation skill | accepted |
+| [0003](0003-stop-logging-prompts-outside-a-dictation-session.md) | Stop logging prompts outside a dictation session | accepted |
+| [0004](0004-keep-prompt-logging-on-userpromptsubmit.md) | Keep prompt logging on UserPromptSubmit, with one shared prompt-log library | accepted |
+| [0005](0005-recover-prompts-after-a-resumed-session.md) | Log the session-start prompt and recover prompts after a resume with marker-driven backfill | accepted |
+| [0006](0006-merge-commit-enforcement-into-the-skill-stop-hook.md) | Merge commit enforcement into the skill's Stop hook, and commit backfilled prompts per the skill's commit discipline | accepted |
+| [0007](0007-load-the-plugin-in-cloud-sessions-with-claude-code-plugin-dirs.md) | Load the plugin in cloud sessions with CLAUDE_CODE_PLUGIN_DIRS | accepted |
