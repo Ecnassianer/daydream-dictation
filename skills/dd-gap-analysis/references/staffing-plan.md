@@ -7,15 +7,13 @@ Read this file only during a `dd-gap-analysis` run, and only when the document a
 - **The problem in business terms.** What the team can't do today, and what that costs: missed dates, lost revenue, risk, burnout.
 - **Current capacity against demand**, with numbers where possible: who is on the team, what they're on, and the work that doesn't fit.
 - **The specific roles**, with level, responsibilities, and why each one closes part of the gap.
-- **The cost**: salary bands, recruiting, equipment, and management overhead.
+- **The cost**, where the author has access to it: salary bands, recruiting, equipment, and management overhead. A leader asking from lower in the organization often can't see salary bands; the plan may leave cost out, and the higher-level leaders who decide add that privileged information themselves.
 - **A timeline**: when each hire starts, how long ramp-up takes, and when the benefit shows up.
 - **Alternatives considered**: reprioritizing, contractors, tooling, borrowing from another team, and why they fall short.
 - **What happens if the answer is no**, and what a partial yes would buy.
 - **How success will be measured** after the hires land.
 
 ## Questions
-
-Ask these after the core *reader needs* question, in this order.
 
 ### Who decides, and what do they need to hear?
 
@@ -31,7 +29,7 @@ For every role requested, check that the document says its level and responsibil
 
 ### Are cost and timeline stated?
 
-Check for a cost per role or in total, start dates, ramp-up time, and when the benefit arrives. Flag a plan that asks for headcount without saying what it costs or when it pays off.
+Check for start dates, ramp-up time, and when the benefit arrives. Check for a cost per role or in total if the author has access to cost data. If the plan leaves cost out because salary bands and similar figures are held by the leaders who decide, don't flag it. Flag a plan that asks for headcount without saying when it pays off.
 
 ### Were alternatives considered?
 

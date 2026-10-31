@@ -30,7 +30,7 @@ The analysis has two layers:
    - `TODO-<Slug>.md` — the to-do list
    - `Prompts-<Slug>.md` — tail of the prompts log (last 20–30 entries for recent context)
 
-   Not all project folders follow this exact naming. If the folder uses different filenames, look for a root document that serves as the main document (e.g., `Overview-*.md`) and use whatever documentation is present. Adapt to the folder's structure rather than skipping analysis because filenames don't match.
+   Not all project folders follow this exact naming. If the folder uses different filenames, look for a root document that serves as the main document (e.g., `Overview-*.md`) and use whatever documentation is present.
 
 3. Identify the document type. Compare the main document against the types below and read the reference file for each one that matches. Read only the matching files.
 
@@ -45,7 +45,7 @@ The analysis has two layers:
    - If nothing matches, run the core questions only. Don't borrow questions from a reference that doesn't fit.
    - Name the type (or types) you picked at the top of the report, in one line, so the user can correct you if you guessed wrong.
 
-4. Answer the core questions and the type-specific questions, in the order given under [Question Order](#question-order). For each one, give concrete findings — not generic advice. Quote specific sections, name specific gaps, reference specific TODOs.
+4. Answer the core questions and the questions from each matching reference. For each one, give concrete findings — not generic advice. Quote specific sections, name specific gaps, reference specific TODOs.
 
 5. After answering every question, write a summary of actionable items and offer to address them.
 
@@ -93,18 +93,9 @@ If the document doesn't match its claim, don't patch it section by section. Reco
 2. Where each existing section's content goes in that outline, or that it should be cut or moved to an appendix.
 3. An ordered task list that moves the document from what it is to what it claims to be.
 
-Offer to write that plan. If the document makes no such claim, say so and ask the user whether it should — a document without a stated purpose is hard to finish.
+Offer to write that plan.
 
 ---
-
-## Question Order
-
-1. The first four core questions, in the order listed: missing, to-dos, improvement, reader needs.
-2. The type-specific questions from each matching reference file, in the order each file gives them. If more than one reference matches, group each file's questions under a heading naming the type.
-3. **Are there any other gaps?**
-4. **Is the document what it says it is?** — always last. It looks at the document as a whole, and the findings above are evidence for it.
-
-Number the questions in the report as you go. Don't rely on a fixed count; it depends on which references matched.
 
 ## Output Format
 

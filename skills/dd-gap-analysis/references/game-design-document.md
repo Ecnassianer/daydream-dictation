@@ -6,24 +6,21 @@ Read this file only during a `dd-gap-analysis` run, and only when the document d
 
 - **A pitch in a few sentences.** The genre, the player's fantasy, and what makes this game different.
 - **The core loop.** What the player does minute to minute, session to session, and why they come back.
-- **Every player-facing system.** Mechanics, progression, economy, failure and recovery, each with enough rules that someone could build or balance it.
-- **Controls and input** for every platform and every game state.
-- **Content scope.** Levels, characters, items, and other assets, with counts or at least a list.
+- **The player-facing systems known so far.** Mechanics, progression, economy, failure and recovery. Game design docs often leave systems to be found or filled in through iteration; a good doc says which ones are deliberately open rather than pretending to be complete.
 - **Target audience and platforms.**
+- **Controls and input** for every platform and control scheme the game plans to support, or a stated plan to make controls data-driven and configurable, to be sorted out later.
 - **Accessibility** plans.
 
 ## Questions
 
-Ask these after the core *reader needs* question, in this order.
-
 ### Are there missing control definitions?
 
-Are the player controls fully defined? Are all inputs accounted for across all relevant states (menus, gameplay, pause, dialogue, death, and so on) and every supported input device? Skip this question if the game has no real-time input, such as a game played entirely on paper.
+Are the player controls defined for every platform and control scheme the document says the game will support? Are all inputs accounted for across all relevant states (menus, gameplay, pause, dialogue, death, and so on)? If the document defers controls to a data-driven, configurable system to be worked out later, check that it says so, and don't flag the missing mappings. Skip this question if the game has no real-time input, such as a game played entirely on paper.
 
 ### Is the core loop clear?
 
-Can you state what the player does moment to moment, and what pulls them into the next session, using only what the document says? Flag systems that don't feed the loop, and loops that are described but never closed (rewards with nothing to spend them on, goals with no follow-up).
+Can you state what the player does moment to moment, and what pulls them into the next session, using only what the document says? Flag loops that are described but never closed (rewards with nothing to spend them on, goals with no follow-up).
 
-### Is the content scope listed?
+### Do any systems distract from the core loop?
 
-Is there a list of the assets the game needs: levels, characters, items, audio, UI screens? Flag systems that imply content the document never lists, and placeholder or working names that still need final names.
+Identify systems that don't feed the core loop, or that pull the player's attention away from it. For each one, ask whether it should be connected to the loop, cut, or kept on purpose.
