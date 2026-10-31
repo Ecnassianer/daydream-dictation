@@ -194,7 +194,7 @@ def find_skill_invocation(entries: list[dict]) -> int | None:
     """Return the index of the prompt that first invoked the dictation skill.
 
     That is a typed /daydream-dictation (or /dictate-daydream) command, or
-    the last prompt the user typed before Claude's Skill tool call for it.
+    the last prompt the user typed before the Skill tool call for it.
     """
     last_prompt = None
     for i, entry in enumerate(entries):
@@ -415,7 +415,7 @@ def _git_push(repo_root: str) -> bool:
 def commit_backfill(repo_root: str, result: dict) -> str:
     """Commit (and push) backfilled entries per the skill's commit discipline.
 
-    On git, the entries are folded into Claude's own commit when that commit
+    On git, the entries are folded into the agent's own commit when that commit
     was made after the first backfilled prompt and hasn't been pushed;
     otherwise they get their own commit. Returns a short description of what
     happened. Never raises: the Stop hook's cleanliness check reports

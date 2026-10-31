@@ -27,4 +27,4 @@ The user's voice dictation software frequently misspells "Correct Phrase". When 
 - Cube er net ease
 ```
 
-Add your own entries based on words your dictation software consistently gets wrong. The more specific the list, the better Claude can clean up your transcriptions.
+Add your own entries based on words your dictation software consistently gets wrong. The more specific the list, the better the agent can clean up your transcriptions.

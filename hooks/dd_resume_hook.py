@@ -10,7 +10,7 @@ session used the daydream-dictation skill, this hook:
   * writes a resume note to the active project's Prompts doc;
   * leaves a resume marker so the skill's hooks backfill the prompts sent
     before the skill is re-invoked;
-  * tells Claude to invoke the skill again.
+  * tells the agent to invoke the skill again.
 
 Otherwise it exits without doing anything.
 """

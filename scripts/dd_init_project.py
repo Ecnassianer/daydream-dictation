@@ -23,14 +23,14 @@ Project root resolution (first match wins):
 VCS detection order:
   1. .agents/dd-vcs file (user override; the legacy .claude/dd-vcs is still read)
   2. Auto-detection (.git, .hg, .plastic, P4CONFIG / .p4config)
-  3. Nothing detected — Claude asks the user which VCS they're using
+  3. Nothing detected — the agent asks the user which VCS they're using
 
 Supported VCS:
   git        — git add / commit / push
   hg         — hg add / commit / push
   perforce   — p4 add / submit
   unity-vcs  — cm add / checkin / push (Plastic SCM / Unity Version Control)
-  custom     — unsupported VCS; Claude manages checkpoints conversationally
+  custom     — unsupported VCS; the agent manages checkpoints conversationally
 """
 
 import os
