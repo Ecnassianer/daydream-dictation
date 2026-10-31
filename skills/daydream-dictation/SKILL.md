@@ -62,10 +62,11 @@ When the user tells you which project to work on:
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
 2. **Read the project's instructions** — if the project folder has an `AGENTS.md`, read it and follow it for the whole session. Older projects may have a `CLAUDE.md` instead; read that if there is no `AGENTS.md`.
 3. **Load commonly confused words** — check for `.agents/dd-voice-variants.md` at the repo root, or the legacy `.claude/dd-voice-variants.md` if there's no `.agents/` copy. If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `references/example-voice-variants.md` for the expected format.
-4. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
-5. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
-6. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
-7. **Confirm the prompt logging hook is firing** — at the end of this turn, the prompt that started the session is logged under a `▶ Session started` note. After that, check whether new entries appear after the user's next prompt.
+4. **Read the entire Daydream document** — this is the canonical state of the project. Everything you need to pick up where the last session left off is here.
+5. **Take note of any other documents referenced in the Daydream document** — more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until it's relevant.
+6. **Confirm the prompt logging hook is firing** — at the end of this turn, the prompt that started the session is logged under a `▶ Session started` note. After that, check whether new entries appear after the user's next prompt.
+
+Don't routinely read the Prompts document. It's the user's audit trail, not your context source. Consult it only when you specifically need to trace a decision back to the dictation that produced it (mostly a Phase 3 move).
 
 ### The `dd-current-dictation-project` State File
 
@@ -89,7 +90,7 @@ Runs the session-start workflow:
 2. If no project is specified, ask the user which project they're working on
 3. If the project doesn't exist, run `dd_init_project.py` to create it
 4. Run `dd_switch_project.py` to set the active project (skip if `dd_init_project.py` just ran — it switches automatically)
-5. Read the tail of the Prompts document (last 20–30 entries)
+5. Read the Daydream document for project state
 6. Confirm the prompt logging hook is firing
 7. Tell the user you're ready — briefly remind them of the three phases if this seems like their first time
 
@@ -150,32 +151,23 @@ The user is reviewing the pull request diff. They may leave inline comments on t
 
 ## The Prompts Document
 
-Every project has a companion Prompts document (`Prompts-<Slug>.md`) that logs every prompt used during sessions. This is a permanent record.
+Every project has a companion Prompts document (`Prompts-<Slug>.md`). The skill's hooks write to it automatically — every prompt the user dictates gets appended verbatim, and prompts missed at session start or after a resume are backfilled. **The hooks own this file. You don't.**
 
-### Rules
+You are not its custodian. You don't routinely read it, edit it, curate it, summarize it, or reorganize it. It exists for the user's benefit — an audit trail they can consult when they want to trace a design decision back to the dictation that caused it (especially during Phase 3 review).
 
-- **Never delete logged prompts**, even if they seem off-topic.
-- **Manually updating prompts**, if the user asks you to clean up the prompts doc, be conservative. For instance, if a prompt clearly belongs to a different project, move it — but never discard it entirely. 
-- **Prompts doc lists prompts verbatim**, transcription errors and all. The raw wording is part of the record.
-- **Hook-written notes and labels are part of the record.** Lines starting with `> ▶ Session started` or `> ⟳ Session resumed`, and entry labels such as `(session start)`, `(backfilled at session start)` and `(backfilled after resume)`, are written by the hooks. Don't edit or remove them.
-- **Co-commit rule:** Prompt log entries belong in the same commit as the document changes they accompany. Do not commit the Prompts doc ahead of the corresponding work.
+Hook-written notes and labels are part of the record. Lines starting with `> ▶ Session started` or `> ⟳ Session resumed`, and entry labels such as `(session start)`, `(backfilled at session start)` and `(backfilled after resume)`, are written by the hooks. Don't edit or remove them.
 
-### Why We Keep It
+### When you DO act on the Prompts file
 
-- **Reconstruction** — clarifies intent when the design doc is ambiguous
-- **Audit trail** — trace any line back to the prompt that produced it
-- **Session continuity** — new sessions read the Prompts doc to understand history
-- **Debugging AI edits** — identifies whether an instruction was ambiguous or misinterpreted
+A small set of exception cases:
 
-### Backfilling Missed Prompts
+- **Backfilling.** The hooks already backfill the prompt that started the session (plus anything sent before a project was chosen) and prompts sent after a resume, so don't log those yourself. If prompts are still missing, reconstruct them from conversation history in order, number sequentially from the last captured entry, commit with a note that entries were backfilled, and tell the user the logging is broken so they can investigate. If failures persist across sessions, suggest filing a bug on the plugin's GitHub repo.
+- **Merge conflict.** Two sessions occasionally collide on prompt numbers. The only firm rule: **don't lose any prompts.** Prefer chronological order if recoverable, but `57/57 → 57a/57b` or `57/57 → 57/58` are both acceptable. Don't split into two Prompts files for the same project.
+- **User-requested cleanup.** If the user explicitly asks you to tidy the file (e.g., "this prompt belongs in the Campfire project, move it"), be conservative — move, never discard. Verbatim wording is part of the record, transcription errors and all.
 
-The hooks backfill automatically in two cases: the prompt that started the session (plus anything sent before a project was chosen), and prompts sent after a resumed session but before the skill was re-invoked. Those entries appear under a session-start or resume note with a label.
+### Co-commit rule
 
-If prompts were still not captured, add them manually in order. Use the conversation history to reconstruct exact wording. Number sequentially from the last captured entry. Commit with a note that entries were backfilled. Immediately notify the user that something is wrong with the prompt logging. If hook failures persist across sessions, suggest reporting it as a bug on the skill's GitHub repo.
-
-### Handling merges
-
-Sometimes two sessions will attempt to use the same number and merging the prompts file becomes difficult. How you resolve this isn't particularly important as long as _none_ of the prompts are lost. If you can tell which prompts came before the others, go ahead and try to put them first, but it's no sweat if the numbering doesn't exactly match chronologically. Try to deduplicate prompt numbers if you can, but how you fix it (57/57 becomes 57/58, or 57/57 becomes 57a/57b) should use your best judgement. Don't try to make two Prompts files for the same project.
+When you commit document changes, the corresponding Prompts log entries belong in the same commit. Don't commit the Prompts doc ahead of the work it accompanies.
 
 ## The Daydream Document
 
