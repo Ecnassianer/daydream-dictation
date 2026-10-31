@@ -123,6 +123,16 @@ Each project gets a folder with three documents:
 
 Optional companion documents (`DecisionTrace-`, `StringTable-`, `DebugTools-`) can be added as a project grows.
 
+Project-specific instructions (for example, localization rules) go in an `AGENTS.md` in the project folder, which most coding agents read. Next to it, keep a short `CLAUDE.md` that points at it, so older versions of Claude Code load the same instructions:
+
+```markdown
+See the AGENTS.md file for further instructions.
+
+@AGENTS.md
+```
+
+The `@AGENTS.md` line makes Claude Code import the file rather than just mention it. The `CLAUDE.md` pointer is planned for removal around October 2027 ([ADR-0008](docs/decisions/0008-use-agents-md-for-per-project-instructions.md)).
+
 ## Hooks
 
 The dictation hooks run only while the `daydream-dictation` skill is active: from the moment it's invoked until `/clear` or the end of the session. Sessions that never use the skill run none of them ([ADR-0002](docs/decisions/0002-scope-dictation-hooks-to-the-active-skill.md)).

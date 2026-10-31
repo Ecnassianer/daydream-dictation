@@ -57,11 +57,12 @@ When the user tells you which project to work on:
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py "ProjectSlug"
    ```
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
-2. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `${CLAUDE_SKILL_DIR}/example-voice-variants.md` for the expected format.
-3. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
-4. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
-5. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
-6. **Confirm the prompt logging hook is firing** — at the end of this turn, the prompt that started the session is logged under a `▶ Session started` note. After that, check whether new entries appear after the user's next prompt.
+2. **Read the project's instructions** — if the project folder has an `AGENTS.md`, read it and follow it for the whole session. Older projects may have a `CLAUDE.md` instead; read that if there is no `AGENTS.md`.
+3. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `${CLAUDE_SKILL_DIR}/example-voice-variants.md` for the expected format.
+4. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
+5. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
+6. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
+7. **Confirm the prompt logging hook is firing** — at the end of this turn, the prompt that started the session is logged under a `▶ Session started` note. After that, check whether new entries appear after the user's next prompt.
 
 ### The `dd-current-dictation-project` State File
 
@@ -244,7 +245,14 @@ Prompts will then not be logged anywhere until a project is set again.
 - **Placeholders for undescribed items:** `**[Item N — not yet documented]**`
 - **Working names:** `**Name** *(working name)*`
 - **To-do items** always go in `TODO-<Slug>.md` (canonical list). May be referenced inline where contextually useful, but their official status is tracked in the `TODO-<SLUG>.md`.
-- **Per-project instructions** can be placed in a `CLAUDE.md` inside the project folder (e.g., `Campfire/CLAUDE.md`). Use this for project-specific rules like localization requirements.
+- **Per-project instructions** go in an `AGENTS.md` inside the project folder (e.g., `Campfire/AGENTS.md`). Use this for project-specific rules like localization requirements. `AGENTS.md` is read by most coding agents, not just Claude Code.
+  - When you create a project's `AGENTS.md`, also create a `CLAUDE.md` next to it containing exactly the shim below, so older versions of Claude Code still load the instructions. Keep all real instructions in `AGENTS.md`.
+    ```markdown
+    See the AGENTS.md file for further instructions.
+
+    @AGENTS.md
+    ```
+  - If a project has only a `CLAUDE.md` with real instructions, leave it alone unless the user asks you to migrate it. To migrate, move its contents into `AGENTS.md` and replace `CLAUDE.md` with the shim.
 
 ### Optional Companion Documents
 
