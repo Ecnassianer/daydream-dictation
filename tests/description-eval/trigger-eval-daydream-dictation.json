@@ -1,0 +1,15 @@
+[
+  {"query": "dd OldFriend", "should_trigger": true},
+  {"query": "start dictation", "should_trigger": true},
+  {"query": "let's daydream a design for the public art initiative", "should_trigger": true},
+  {"query": "switch dd to Magic Trick", "should_trigger": true},
+  {"query": "open Daydream-Campfire", "should_trigger": true},
+  {"query": "I want to start a dictation session for the grants project", "should_trigger": true},
+  {"query": "back to phase 1 for OldFriend, here goes", "should_trigger": true},
+
+  {"query": "Set up daydream-dictation in my Claude Code config", "should_trigger": false},
+  {"query": "What's the best voice dictation app for Mac right now?", "should_trigger": false},
+  {"query": "The prompt logging hook isn't running, debug it", "should_trigger": false},
+  {"query": "Show me the git log for the Campfire project", "should_trigger": false},
+  {"query": "I have a draft policy memo for OldFriend, read it and tell me what's weak — generic feedback, no project framing", "should_trigger": false}
+]
