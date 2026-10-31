@@ -1,16 +1,21 @@
 ---
 name: dd-gap-analysis
-description: Run a structured gap analysis on any design document or project folder. Use when asked to check what's missing, find gaps, or review completeness of a design.
+description: Run a structured gap analysis on a design document, letter, staffing plan, or any other document or project folder. Use when asked to check what's missing, find gaps, or review completeness of a document.
 argument-hint: "[project folder or name]"
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
 allowed-tools: Read Glob Grep
 ---
 
 # Gap Analysis
 
-A standalone skill that analyzes design documents for gaps, missing coverage, and open work. This skill has no dependency on the Daydream Dictation process — it works on any set of documents at any time. A user might invoke it during a Phase 2 session, run it cold on a project they haven't touched in weeks, or use it as the first step when picking up an unfamiliar document.
+A standalone skill that analyzes documents for gaps, missing coverage, and open work. This skill has no dependency on the Daydream Dictation process — it works on any set of documents at any time. A user might invoke it during a Phase 2 session, run it cold on a project they haven't touched in weeks, or use it as the first step when picking up an unfamiliar document.
+
+The analysis has two layers:
+
+- **Core questions** (below) apply to every document.
+- **Document-type questions** come from a reference file in `references/` and apply only when the document is that type. They hold everything that only makes sense for one kind of document, so a letter never gets asked about player controls.
 
 ## How to Execute
 
@@ -21,61 +26,94 @@ A standalone skill that analyzes design documents for gaps, missing coverage, an
    - If still nothing, ask the user which project to analyze
 
 2. Read the project's documents:
-   - `Daydream-<Slug>.md` — the main design document
+   - `Daydream-<Slug>.md` — the main document
    - `TODO-<Slug>.md` — the to-do list
    - `Prompts-<Slug>.md` — tail of the prompts log (last 20–30 entries for recent context)
 
-   Not all project folders follow this exact naming. If the folder uses different filenames, look for a root document that serves as the main design doc (e.g., `Overview-*.md`) and use whatever documentation is present. Adapt to the folder's structure rather than skipping analysis because filenames don't match.
+   Not all project folders follow this exact naming. If the folder uses different filenames, look for a root document that serves as the main document (e.g., `Overview-*.md`) and use whatever documentation is present. Adapt to the folder's structure rather than skipping analysis because filenames don't match.
 
-3. Answer each of the seven questions below. For each one, give concrete findings — not generic advice. Quote specific sections, name specific gaps, reference specific TODOs.
+3. Identify the document type. Compare the main document against the types below and read the reference file for each one that matches. Read only the matching files.
 
-4. After answering all seven, write a summary of actionable items and offer to address them.
+   | Type | Reference file | Signals |
+   | --- | --- | --- |
+   | Game design document | [references/game-design-document.md](references/game-design-document.md) | Describes a video game, tabletop game, or other playable experience: players, mechanics, levels, controls, game loops |
+   | Letter | [references/letter.md](references/letter.md) | Addressed to a specific recipient: a salutation, a sign-off, a cover letter, an email, a memo, an open letter |
+   | Staffing plan | [references/staffing-plan.md](references/staffing-plan.md) | Argues for adding people to a team: headcount, roles, hiring, budget, capacity |
+
+   - A document can match more than one type. A game pitch with a hiring section matches both game design document and staffing plan. Use every reference that matches.
+   - If nothing matches, run the core questions only. Don't borrow questions from a reference that doesn't fit.
+   - Name the type (or types) you picked at the top of the report, in one line, so the user can correct you if you guessed wrong.
+
+4. Answer the core questions and the type-specific questions, in the order given under [Question Order](#question-order). For each one, give concrete findings — not generic advice. Quote specific sections, name specific gaps, reference specific TODOs.
+
+5. After answering every question, write a summary of actionable items and offer to address them.
 
 - **Standalone output.** The gap analysis produces a self-contained report. Do not modify any documents — only read, report and offer to help. The user decides what to act on.
 
 ---
 
-## The Seven Questions
+## Core Questions
 
-### 1. What are we missing from the design?
+### What are we missing?
 
-Are there systems, features, or areas that have been mentioned or implied but not yet documented? Are there sections that feel thin or underspecified? Look for things the user talked about in prompts that never made it into the document.
+Are there topics, systems, features, or arguments that have been mentioned or implied but not yet written down? Are there sections that feel thin or underspecified? Look for things the user talked about in prompts that never made it into the document.
 
-### 2. What to-do items are still open?
+### What to-do items are still open?
 
-Review `TODO-<Slug>.md`. Which items remain unresolved? Scan the Prompts log and the design document for to-do items that were mentioned but never added to the TODO file. Report any discrepancies.
+Review `TODO-<Slug>.md`. Which items remain unresolved? Scan the Prompts log and the document for to-do items that were mentioned but never added to the TODO file. Report any discrepancies.
 
-### 3. What are opportunities for improvement?
+### What are opportunities for improvement?
 
-Beyond what's missing — where does the existing design feel unclear, inconsistent, or underdeveloped? What could be strengthened? Look for contradictions between sections, vague language that would block implementation, or areas where the user changed their mind but the document wasn't fully updated.
+Beyond what's missing — where does the existing document feel unclear, inconsistent, or underdeveloped? What could be strengthened? Look for contradictions between sections, vague language that would block the reader from acting, or areas where the user changed their mind but the document wasn't fully updated.
 
-### 4. What will the implementing agent need to know?
+### What will the reader need to know to act on this?
 
-Identify anything that an agent picking up this design document would find ambiguous or underspecified. What decisions would they have to make on their own because the document doesn't answer them? If the project has a `DecisionTrace-<Slug>.md`, check whether it covers the technical decisions needed to implement the design. Does the document call out open decisions? Does the user want to make them now? If no Decision Trace exists and the project has enough technical complexity to warrant one, note that.
+Work out who acts on this document next — an implementing agent, a recipient, a manager approving a request — and what they will do with it. Then identify anything that reader would find ambiguous or underspecified. What decisions would they have to make on their own because the document doesn't answer them? Does the document call out open decisions? Does the user want to make them now?
 
-### 5. Are there missing control definitions?
+If the project has a `DecisionTrace-<Slug>.md`, check whether it covers the technical decisions needed to implement the design. If no Decision Trace exists and the project has enough technical complexity to warrant one, note that.
 
-For any interactive or playable system: are the player controls fully defined? Are all inputs accounted for across all relevant states? Skip this question if the project is not interactive.
+### Are there any other gaps?
 
-### 6. Are there untranslated strings?
+Catch-all for anything not covered by the other questions — undefined edge cases, unresolved working names, placeholder items (`[Item N — not yet documented]`), or anything else that would stop the document from doing its job.
 
-If the project has a `StringTable-<Slug>.md` or other localization files, check for completeness: are there strings missing translations for any supported language? Are there strings referenced in the design doc that don't have string table entries? If gaps exist, ask: should translation happen now, or is it deferred? Skip this question if the project has no localization.
+### Is the document what it says it is?
 
-### 7. Are there any other gaps?
+A wandering dictation can leave a document shaped by where the conversation started rather than where it ended up. Look for statements of what the document is or is for: "This document is a concrete plan for execution", "This is a pitch for…", "The goal of this doc is…". The title and the opening paragraph usually carry the claim, but it can appear anywhere.
 
-Catch-all for anything not covered above — missing asset lists, undefined edge cases, unresolved working names, placeholder items (`[Item N — not yet documented]`), or anything else that would block a complete implementation.
+For each claim, check whether the structure and the bulk of the content deliver it. Warning signs:
+
+- Most sections are organized around early ideas, background, or musings, while the content the claim promises is scattered across them.
+- The section order follows the order the user talked, not the order a reader needs.
+- The opening describes one kind of document and the closing describes another.
+
+If the document doesn't match its claim, don't patch it section by section. Recommend a planning step that produces a restructure plan:
+
+1. The target structure — an outline of the document it says it is.
+2. Where each existing section's content goes in that outline, or that it should be cut or moved to an appendix.
+3. An ordered task list that moves the document from what it is to what it claims to be.
+
+Offer to write that plan. If the document makes no such claim, say so and ask the user whether it should — a document without a stated purpose is hard to finish.
 
 ---
+
+## Question Order
+
+1. The first four core questions, in the order listed: missing, to-dos, improvement, reader needs.
+2. The type-specific questions from each matching reference file, in the order each file gives them. If more than one reference matches, group each file's questions under a heading naming the type.
+3. **Are there any other gaps?**
+4. **Is the document what it says it is?** — always last. It looks at the document as a whole, and the findings above are evidence for it.
+
+Number the questions in the report as you go. Don't rely on a fixed count; it depends on which references matched.
 
 ## Output Format
 
 For each question, respond with:
 - **Finding** — what you found (or "No gaps identified" if clean)
-- **Severity** — critical (blocks implementation), moderate (should be addressed), minor (nice to have)
+- **Severity** — critical (blocks the document from doing its job), moderate (should be addressed), minor (nice to have)
 - **Suggestion** — what to do about it
 
 End with a numbered list of all actionable items sorted by severity, and ask the user which ones to tackle.
 
 ## Goal
 
-The gap analysis is a signal that the design is complete enough to hand off. By the time all seven questions are answered satisfactorily, you should be confident that an implementing agent has everything it needs, and that the user has touched every part of the design before moving on. If significant gaps remain, say so clearly. If the design looks solid, tell the user it's ready.
+The gap analysis is a signal that the document is complete enough to hand off — to an implementing agent, a recipient, or a decision-maker. By the time every question is answered satisfactorily, you should be confident that the reader has everything they need, and that the user has touched every part of the document before moving on. If significant gaps remain, say so clearly. If the document looks solid, tell the user it's ready.
