@@ -70,3 +70,4 @@ Fixing typos, broken links, or formatting in an old ADR is fine.
 | [0008](0008-use-agents-md-for-per-project-instructions.md) | Use AGENTS.md for per-project instructions, with a CLAUDE.md pointer for one year | proposed |
 | [0009](0009-move-config-and-state-out-of-the-claude-folder.md) | Move Daydream Dictation's config and state out of the .claude folder | proposed |
 | [0010](0010-make-the-dictation-skill-self-contained.md) | Make the daydream-dictation skill self-contained, with skill-relative script paths | proposed |
+| [0011](0011-find-python-with-a-launcher-script.md) | Find Python with a launcher script instead of calling python3 directly | proposed |
