@@ -16,11 +16,12 @@ Then commits and pushes using the active VCS.
 
 Project root resolution (first match wins):
   1. --project-root <path> argument
-  2. .claude/dd-projects-root file (contains an absolute path)
+  2. .agents/dd-projects-root file (contains an absolute path; the legacy
+     .claude/dd-projects-root is still read)
   3. Repo root (current working directory)
 
 VCS detection order:
-  1. .claude/dd-vcs file (user override)
+  1. .agents/dd-vcs file (user override; the legacy .claude/dd-vcs is still read)
   2. Auto-detection (.git, .hg, .plastic, P4CONFIG / .p4config)
   3. Nothing detected — Claude asks the user which VCS they're using
 

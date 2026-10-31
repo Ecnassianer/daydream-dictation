@@ -1,14 +1,11 @@
 ---
 name: daydream-dictation
 description: Voice-driven document authoring using the Daydream Dictation workflow. Activates when the user is dictating design documents, mentions a Daydream project, refers to Prompts documents or dd-current-dictation-project, or starts a dictation session.
-version: 0.1.0
-allowed-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Glob
-  - Grep
+license: MIT
+compatibility: Requires Python 3 and a supported VCS (git, Mercurial, Perforce or Unity Version Control). Prompt logging and commit checks use Claude Code skill hooks; other agents run the skill without them.
+metadata:
+  version: "0.1.0"
+allowed-tools: Read Write Edit Bash Glob Grep
 # Prompt logging and commit checks run only while this skill is active
 # (docs/decisions/0002). ${CLAUDE_PLUGIN_ROOT} is the plugin root for both
 # supported installs: a marketplace install and CLAUDE_CODE_PLUGIN_DIRS.
@@ -57,11 +54,12 @@ When the user tells you which project to work on:
    python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py "ProjectSlug"
    ```
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
-2. **Load commonly confused words** — check for variant files in `.claude/` (e.g., `.claude/dd-voice-variants.md`). If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `${CLAUDE_SKILL_DIR}/example-voice-variants.md` for the expected format.
-3. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
-4. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
-5. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
-6. **Confirm the prompt logging hook is firing** — at the end of this turn, the prompt that started the session is logged under a `▶ Session started` note. After that, check whether new entries appear after the user's next prompt.
+2. **Read the project's instructions** — if the project folder has an `AGENTS.md`, read it and follow it for the whole session. Older projects may have a `CLAUDE.md` instead; read that if there is no `AGENTS.md`.
+3. **Load commonly confused words** — check for `.agents/dd-voice-variants.md` at the repo root, or the legacy `.claude/dd-voice-variants.md` if there's no `.agents/` copy. If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `${CLAUDE_SKILL_DIR}/example-voice-variants.md` for the expected format.
+4. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
+5. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
+6. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
+7. **Confirm the prompt logging hook is firing** — at the end of this turn, the prompt that started the session is logged under a `▶ Session started` note. After that, check whether new entries appear after the user's next prompt.
 
 ### The `dd-current-dictation-project` State File
 
@@ -81,7 +79,7 @@ The file is not automatically cleared between sessions — it persists. Always u
 
 Runs the session-start workflow:
 
-1. Load commonly confused words from `.claude/dd-voice-variants.md` if present
+1. Load commonly confused words from `.agents/dd-voice-variants.md` (or the legacy `.claude/dd-voice-variants.md`) if present
 2. If no project is specified, ask the user which project they're working on
 3. If the project doesn't exist, run `dd_init_project.py` to create it
 4. Run `dd_switch_project.py` to set the active project (skip if `dd_init_project.py` just ran — it switches automatically)
@@ -217,11 +215,11 @@ The script creates `<Slug>/Daydream-<Slug>.md`, `TODO-<Slug>.md`, `Prompts-<Slug
 
 If the folder already exists, don't re-run the script — use `dd_switch_project.py` to set the active project. It verifies that the expected files exist.
 
-**Project root resolution:** CLI `--project-root` → `.claude/dd-projects-root` file → repo root.
+**Project root resolution:** CLI `--project-root` → `.agents/dd-projects-root` file (or the legacy `.claude/dd-projects-root`) → repo root.
 
 ### Custom Project Root
 
-By default, project folders are created at the repo root. If a user wants all Daydream projects in a subdirectory (e.g., `docs/` or `design/`), they can create `.claude/dd-projects-root` containing the absolute path to that directory. This is useful for repos where the root is cluttered or where design documents belong in a specific subtree. The file is a single line — just the path, no other syntax.
+By default, project folders are created at the repo root. If a user wants all Daydream projects in a subdirectory (e.g., `docs/` or `design/`), they can create `.agents/dd-projects-root` containing the absolute path to that directory. This is useful for repos where the root is cluttered or where design documents belong in a specific subtree. The file is a single line — just the path, no other syntax.
 
 ### Error Recovery
 
@@ -244,7 +242,14 @@ Prompts will then not be logged anywhere until a project is set again.
 - **Placeholders for undescribed items:** `**[Item N — not yet documented]**`
 - **Working names:** `**Name** *(working name)*`
 - **To-do items** always go in `TODO-<Slug>.md` (canonical list). May be referenced inline where contextually useful, but their official status is tracked in the `TODO-<SLUG>.md`.
-- **Per-project instructions** can be placed in a `CLAUDE.md` inside the project folder (e.g., `Campfire/CLAUDE.md`). Use this for project-specific rules like localization requirements.
+- **Per-project instructions** go in an `AGENTS.md` inside the project folder (e.g., `Campfire/AGENTS.md`). Use this for project-specific rules like localization requirements. `AGENTS.md` is read by most coding agents, not just Claude Code.
+  - When you create a project's `AGENTS.md`, also create a `CLAUDE.md` next to it containing exactly the shim below, so older versions of Claude Code still load the instructions. Keep all real instructions in `AGENTS.md`.
+    ```markdown
+    See the AGENTS.md file for further instructions.
+
+    @AGENTS.md
+    ```
+  - If a project has only a `CLAUDE.md` with real instructions, leave it alone unless the user asks you to migrate it. To migrate, move its contents into `AGENTS.md` and replace `CLAUDE.md` with the shim.
 
 ### Optional Companion Documents
 
@@ -316,7 +321,7 @@ Version control is **required**. The diff review phase depends on being able to 
 
 ### Detection Order (first match wins)
 
-1. `.claude/dd-vcs` file — user-supplied override
+1. `.agents/dd-vcs` file (or the legacy `.claude/dd-vcs`) — user-supplied override
 2. Auto-detection: `.git/` → git; `.hg/` → hg; `.plastic/` → unity-vcs; `.p4config` or `P4CONFIG` env var → perforce
 3. Nothing detected → ask the user; if they don't know, walk them through setting up Git
 
@@ -325,4 +330,6 @@ Version control is **required**. The diff review phase depends on being able to 
 ## The `dd-` Naming Prefix
 
 Any file or artifact that lives outside a project folder and is part of the Daydream Dictation system must be prefixed with `dd-`. This distinguishes skill infrastructure from the user's work.
+
+Repo-level config files (`dd-vcs`, `dd-projects-root`, `dd-voice-variants.md`) live in `.agents/` at the repo root. Older repos keep them in `.claude/`, which is still read when there's no `.agents/` copy. When you create one of these files, put it in `.agents/`.
 

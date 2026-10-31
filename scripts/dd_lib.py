@@ -85,14 +85,35 @@ def find_repo_root() -> str:
 
 
 # ---------------------------------------------------------------------------
+# Config files
+# ---------------------------------------------------------------------------
+
+# Folders that hold the dd-* config files, in lookup order (ADR-0009).
+# .claude/ is the legacy location, still read until about October 2027.
+CONFIG_DIRS = (".agents", ".claude")
+
+
+def find_config_file(repo_root: str, name: str) -> str | None:
+    """Return the path of a dd-* config file, or None if there isn't one.
+
+    .agents/<name> wins over the legacy .claude/<name> when both exist.
+    """
+    for folder in CONFIG_DIRS:
+        path = os.path.join(repo_root, folder, name)
+        if os.path.isfile(path):
+            return path
+    return None
+
+
+# ---------------------------------------------------------------------------
 # VCS detection
 # ---------------------------------------------------------------------------
 
 def detect_vcs(repo_root: str) -> str | None:
     """Determine which VCS to use. Returns vcs name or None."""
-    # User override: .claude/dd-vcs takes precedence
-    override_file = os.path.join(repo_root, ".claude", "dd-vcs")
-    if os.path.isfile(override_file):
+    # User override: a dd-vcs config file takes precedence
+    override_file = find_config_file(repo_root, "dd-vcs")
+    if override_file:
         with open(override_file, encoding="utf-8") as f:
             value = f.read().strip().lower()
         aliases = {"p4": "perforce", "mercurial": "hg", "plastic": "unity-vcs"}
@@ -128,13 +149,14 @@ def resolve_project_root(repo_root: str, cli_override: str | None) -> str:
             sys.exit(1)
         return path
 
-    config_file = os.path.join(repo_root, ".claude", "dd-projects-root")
-    if os.path.isfile(config_file):
+    config_file = find_config_file(repo_root, "dd-projects-root")
+    if config_file:
         with open(config_file, encoding="utf-8") as f:
             content = f.read().strip()
         if content:
             if not os.path.isdir(content):
-                print(f"ERROR: .claude/dd-projects-root points to '{content}' which does not exist.",
+                shown = os.path.relpath(config_file, repo_root)
+                print(f"ERROR: {shown} points to '{content}' which does not exist.",
                       file=sys.stderr)
                 sys.exit(1)
             return content
