@@ -24,7 +24,7 @@ import pytest
 # ---------------------------------------------------------------------------
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_DD_LIB_PATH = os.path.join(_REPO_ROOT, "scripts", "dd_lib.py")
+_DD_LIB_PATH = os.path.join(_REPO_ROOT, "skills", "daydream-dictation", "scripts", "dd_lib.py")
 
 
 def _load_dd_lib():

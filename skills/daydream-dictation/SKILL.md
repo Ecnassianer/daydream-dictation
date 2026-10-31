@@ -33,6 +33,8 @@ This skill covers voice parsing, prompt logging, commit discipline, and project 
 
 If the user asks questions about the process itself — "what is Phase 1?", "how does this work?", "what should I do next?" — activate the `/dd-teach` skill to handle the explanation.
 
+**Script paths.** The `scripts/` and `references/` paths in this skill are relative to this skill's own folder (the base directory you were given when the skill loaded), not to the repo. Commands run from the repo root, so always run a script by its absolute path: this skill's folder followed by `scripts/<name>.py`.
+
 ---
 
 ## Quick Reference — The Three Phases
@@ -51,11 +53,11 @@ When the user tells you which project to work on:
 
 1. **Switch to the project** — run `dd_switch_project.py` with the project slug or name. This sets `dd-current-dictation-project` and verifies the project files exist. Do this as your very first action.
    ```bash
-   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py "ProjectSlug"
+   python3 scripts/dd_switch_project.py "ProjectSlug"
    ```
    For new projects, use `dd_init_project.py` instead (it switches automatically after creation).
 2. **Read the project's instructions** — if the project folder has an `AGENTS.md`, read it and follow it for the whole session. Older projects may have a `CLAUDE.md` instead; read that if there is no `AGENTS.md`.
-3. **Load commonly confused words** — check for `.agents/dd-voice-variants.md` at the repo root, or the legacy `.claude/dd-voice-variants.md` if there's no `.agents/` copy. If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `${CLAUDE_SKILL_DIR}/example-voice-variants.md` for the expected format.
+3. **Load commonly confused words** — check for `.agents/dd-voice-variants.md` at the repo root, or the legacy `.claude/dd-voice-variants.md` if there's no `.agents/` copy. If found, familiarize yourself with the substitutions so you can apply them throughout the session. See `references/example-voice-variants.md` for the expected format.
 4. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
 5. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
 6. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
@@ -207,8 +209,8 @@ Here's an example format that includes a source of when the TODO came up:
 Always use `dd_init_project.py` — never manually create project files.
 
 ```bash
-python3 ${CLAUDE_SKILL_DIR}/../../scripts/dd_init_project.py "Project Name"
-python3 ${CLAUDE_SKILL_DIR}/../../scripts/dd_init_project.py --project-root /path "Project Name"
+python3 scripts/dd_init_project.py "Project Name"
+python3 scripts/dd_init_project.py --project-root /path "Project Name"
 ```
 
 The script creates `<Slug>/Daydream-<Slug>.md`, `TODO-<Slug>.md`, `Prompts-<Slug>.md`, sets `dd-current-dictation-project`, and commits.
@@ -231,7 +233,7 @@ By default, project folders are created at the repo root. If a user wants all Da
 
 If the user is done working on a specific project, you can clear the active project with the switch project script:
 ```bash
-python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py --clear
+python3 scripts/dd_switch_project.py --clear
 ```
 Prompts will then not be logged anywhere until a project is set again.
 
@@ -290,7 +292,7 @@ When the user says to switch projects:
 
 1. Run `dd_switch_project.py` with the new project's slug — this is your first action
    ```bash
-   python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py "NewProjectSlug"
+   python3 scripts/dd_switch_project.py "NewProjectSlug"
    ```
 2. Do the normal steps when you start a session.
 3. Continue working — subsequent prompts will log to the new project

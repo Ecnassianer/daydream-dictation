@@ -23,9 +23,9 @@ import os
 import subprocess
 import sys
 
-# Import the shared libraries from the scripts/ directory alongside hooks/
+# Import the shared libraries from the daydream-dictation skill's scripts/ folder
 _PLUGIN_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.insert(0, os.path.join(_PLUGIN_ROOT, "scripts"))
+sys.path.insert(0, os.path.join(_PLUGIN_ROOT, "skills", "daydream-dictation", "scripts"))
 import dd_lib as dd
 import dd_prompt_log as pl
 

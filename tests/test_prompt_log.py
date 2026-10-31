@@ -26,7 +26,7 @@ _STOP_HOOK = os.path.join(_HOOKS, "dd_stop_hook.py")
 _STOP_FAILURE = os.path.join(_HOOKS, "dd_stop_failure_hook.py")
 _RESUME_HOOK = os.path.join(_HOOKS, "dd_resume_hook.py")
 
-sys.path.insert(0, os.path.join(_REPO_ROOT, "scripts"))
+sys.path.insert(0, os.path.join(_REPO_ROOT, "skills", "daydream-dictation", "scripts"))
 import dd_prompt_log as pl  # noqa: E402
 
 PAST = "2020-01-01T10:00:00.000Z"

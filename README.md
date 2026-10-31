@@ -154,7 +154,7 @@ Override auto-detection by creating `.agents/dd-vcs` with the VCS name.
 
 ## Voice Variants
 
-Create `.agents/dd-voice-variants.md` in your repo to list words your dictation software commonly confuses. See `skills/daydream-dictation/example-voice-variants.md` for the format.
+Create `.agents/dd-voice-variants.md` in your repo to list words your dictation software commonly confuses. See `skills/daydream-dictation/references/example-voice-variants.md` for the format.
 
 ## Config files
 
