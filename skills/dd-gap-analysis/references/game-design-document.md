@@ -4,7 +4,8 @@ Read this file only during a `dd-gap-analysis` run, and only when the document d
 
 ## What a good game design document has
 
-- **A pitch in a few sentences.** The genre, the player's fantasy, and what makes this game different.
+- **A pitch in a few sentences.** The genre or genres, and what makes this game different from the genre template: the reason a player would switch from the genre leader to this game.
+- **The player fantasy.** Who the player gets to be, or what they get to feel, while playing.
 - **The core loop.** What the player does minute to minute, session to session, and why they come back.
 - **The player-facing systems known so far.** Mechanics, progression, economy, failure and recovery. Game design docs often leave systems to be found or filled in through iteration; a good doc says which ones are deliberately open rather than pretending to be complete.
 - **Target audience and platforms.**
