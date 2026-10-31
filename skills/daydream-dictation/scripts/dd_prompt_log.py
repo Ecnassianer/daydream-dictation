@@ -19,7 +19,6 @@ $XDG_STATE_HOME/daydream-dictation/sessions/ (by default
 
 from __future__ import annotations
 
-import fcntl
 import glob as glob_module
 import json
 import os
@@ -250,6 +249,42 @@ def _state_filename(session_id: str) -> str:
     return f"{re.sub(r'[^A-Za-z0-9_-]', '_', session_id)}.json"
 
 
+# File locking. fcntl exists only on macOS and Linux; Windows has msvcrt.
+# Both are in the standard library. The lock covers the session's state file
+# while a hook reads and rewrites it, so overlapping hooks can't clobber
+# each other's changes.
+
+def _lock_posix(f) -> None:
+    import fcntl
+    fcntl.flock(f, fcntl.LOCK_EX)
+
+
+def _unlock_posix(f) -> None:
+    import fcntl
+    fcntl.flock(f, fcntl.LOCK_UN)
+
+
+def _lock_windows(f) -> None:
+    import msvcrt
+    # msvcrt locks a byte range starting at the current position. Lock the
+    # first byte; that works even while the file is empty. LK_LOCK retries
+    # for about 10 seconds, then raises OSError.
+    f.seek(0)
+    msvcrt.locking(f.fileno(), msvcrt.LK_LOCK, 1)
+
+
+def _unlock_windows(f) -> None:
+    import msvcrt
+    f.seek(0)
+    msvcrt.locking(f.fileno(), msvcrt.LK_UNLCK, 1)
+
+
+if os.name == "nt":
+    _lock_file, _unlock_file = _lock_windows, _unlock_windows
+else:
+    _lock_file, _unlock_file = _lock_posix, _unlock_posix
+
+
 @contextmanager
 def session_state(session_id: str):
     """Lock, load and save the state for one session.
@@ -263,25 +298,30 @@ def session_state(session_id: str):
     legacy = legacy_state_dir()
     legacy_path = os.path.join(legacy, _state_filename(session_id)) if legacy else None
     with open(path, "a+", encoding="utf-8") as f:
-        fcntl.flock(f, fcntl.LOCK_EX)
-        f.seek(0)
-        raw = f.read()
-        if not raw.strip() and legacy_path and os.path.isfile(legacy_path):
-            # A session that started before the state folder moved.
-            try:
-                with open(legacy_path, encoding="utf-8") as old:
-                    raw = old.read()
-                os.remove(legacy_path)
-            except OSError:
-                pass
+        _lock_file(f)
         try:
-            state = json.loads(raw) if raw.strip() else {}
-        except json.JSONDecodeError:
-            state = {}
-        yield state
-        f.seek(0)
-        f.truncate()
-        json.dump(state, f)
+            f.seek(0)
+            raw = f.read()
+            if not raw.strip() and legacy_path and os.path.isfile(legacy_path):
+                # A session that started before the state folder moved.
+                try:
+                    with open(legacy_path, encoding="utf-8") as old:
+                        raw = old.read()
+                    os.remove(legacy_path)
+                except OSError:
+                    pass
+            try:
+                state = json.loads(raw) if raw.strip() else {}
+            except json.JSONDecodeError:
+                state = {}
+            yield state
+            f.seek(0)
+            f.truncate()
+            json.dump(state, f)
+        finally:
+            # Write the new state to disk before another hook can take the lock.
+            f.flush()
+            _unlock_file(f)
 
 
 def cleanup_stale_state(max_age: int = STALE_STATE_SECONDS) -> None:

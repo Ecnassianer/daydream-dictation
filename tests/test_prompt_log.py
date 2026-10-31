@@ -448,3 +448,64 @@ class TestStateDir:
         pl.cleanup_stale_state()
         assert not (new / "old.json").exists()
         assert not (legacy / "old.json").exists()
+
+
+class TestStateLocking:
+    """The state-file lock works on Windows as well as macOS and Linux (#52)."""
+
+    _SCRIPTS = os.path.join(_REPO_ROOT, "skills", "daydream-dictation", "scripts")
+
+    def _run(self, code, tmp_path):
+        env = {**os.environ, "DD_STATE_DIR": str(tmp_path / "state")}
+        return subprocess.run([sys.executable, "-c", code], env=env, cwd=self._SCRIPTS,
+                              capture_output=True, text=True, timeout=60)
+
+    def test_imports_without_fcntl(self, tmp_path):
+        # Windows has no fcntl; importing the hooks' library must not need it.
+        r = self._run("import sys; sys.modules['fcntl'] = None\n"
+                      "import dd_prompt_log\nprint('ok')", tmp_path)
+        assert r.returncode == 0, r.stderr
+        assert r.stdout.strip() == "ok"
+
+    def test_windows_path_locks_and_unlocks_first_byte(self, tmp_path):
+        # Simulate Windows: no fcntl, os.name == "nt", and a recording msvcrt.
+        code = r'''
+import json, os, sys, types
+# Load the standard modules dd_prompt_log needs while still looking like POSIX
+# (subprocess, for one, decides it is on Windows if msvcrt imports).
+import subprocess, glob, re, time, datetime, contextlib, dd_lib
+sys.modules["fcntl"] = None
+calls = []
+fake = types.ModuleType("msvcrt")
+fake.LK_LOCK, fake.LK_UNLCK = 1, 0
+fake.locking = lambda fd, mode, n: calls.append((mode, os.lseek(fd, 0, os.SEEK_CUR), n))
+sys.modules["msvcrt"] = fake
+os.name = "nt"  # only dd_prompt_log's own platform check should see Windows
+import dd_prompt_log as pl
+assert pl._lock_file is pl._lock_windows
+with pl.session_state("win-1") as state:
+    state["start_handled"] = True
+with pl.session_state("win-1") as state:
+    assert state == {"start_handled": True}, state
+print(json.dumps(calls))
+'''
+        r = self._run(code, tmp_path)
+        assert r.returncode == 0, r.stderr
+        calls = json.loads(r.stdout)
+        # Two sessions' worth of lock/unlock, each on byte 0, length 1.
+        assert calls == [[1, 0, 1], [0, 0, 1], [1, 0, 1], [0, 0, 1]]
+
+    def test_concurrent_updates_are_not_lost(self, tmp_path):
+        # Several hook processes updating the same session at once.
+        worker = (
+            "import dd_prompt_log as pl\n"
+            "for _ in range(25):\n"
+            "    with pl.session_state('busy') as s:\n"
+            "        s['n'] = s.get('n', 0) + 1\n"
+        )
+        env = {**os.environ, "DD_STATE_DIR": str(tmp_path / "state")}
+        procs = [subprocess.Popen([sys.executable, "-c", worker], env=env, cwd=self._SCRIPTS)
+                 for _ in range(6)]
+        assert all(p.wait(timeout=60) == 0 for p in procs)
+        state = json.loads((tmp_path / "state" / "busy.json").read_text())
+        assert state["n"] == 6 * 25
