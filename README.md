@@ -66,7 +66,7 @@ CLAUDE_CODE_PLUGIN_DIRS=/opt/daydream-dictation
 
 The environment needs network access to github.com; the default **Trusted** level allows it.
 
-**Updating:** cloud environments cache the setup script's result for about a week, so new plugin versions arrive when that cache rebuilds. To control the version, clone a release tag (`--branch v0.3.0`) and change the tag to update.
+**Updating:** cloud environments cache the setup script's result for about a week, so new plugin versions arrive when that cache rebuilds. To control the version, clone a release tag (`--branch v0.4.0`) and change the tag to update.
 
 **Upgrading from the old manual install:** earlier versions of this README had cloud users clone the plugin into their repo, wire its hooks into `.claude/settings.json`, and list the skills in `CLAUDE.md`. That setup no longer works, because the dictation hooks are registered only when the skill is actually invoked. Remove the cloned folder, the Daydream Dictation hook entries in `.claude/settings.json`, and the skill list in `CLAUDE.md`, then configure the environment as above.
 
