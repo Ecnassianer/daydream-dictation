@@ -18,7 +18,7 @@ import tempfile
 import pytest
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_SCRIPTS = os.path.join(_REPO_ROOT, "scripts")
+_SCRIPTS = os.path.join(_REPO_ROOT, "skills", "daydream-dictation", "scripts")
 _HOOKS = os.path.join(_REPO_ROOT, "hooks")
 _INIT_SCRIPT = os.path.join(_SCRIPTS, "dd_init_project.py")
 _SWITCH_SCRIPT = os.path.join(_SCRIPTS, "dd_switch_project.py")

@@ -24,7 +24,7 @@ import pytest
 # ---------------------------------------------------------------------------
 
 _REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_DD_LIB_PATH = os.path.join(_REPO_ROOT, "scripts", "dd_lib.py")
+_DD_LIB_PATH = os.path.join(_REPO_ROOT, "skills", "daydream-dictation", "scripts", "dd_lib.py")
 
 
 def _load_dd_lib():
@@ -107,11 +107,22 @@ class TestDetectVcs:
         # Clean up P4CONFIG env var if set by a test
         os.environ.pop("P4CONFIG", None)
 
-    def _write_override(self, content):
-        claude_dir = os.path.join(self.tmpdir, ".claude")
-        os.makedirs(claude_dir, exist_ok=True)
-        with open(os.path.join(claude_dir, "dd-vcs"), "w") as f:
+    def _write_override(self, content, folder=".agents"):
+        config_dir = os.path.join(self.tmpdir, folder)
+        os.makedirs(config_dir, exist_ok=True)
+        with open(os.path.join(config_dir, "dd-vcs"), "w") as f:
             f.write(content)
+
+    # --- Config folder (ADR-0009) ---
+
+    def test_legacy_claude_override_still_read(self):
+        self._write_override("hg", folder=".claude")
+        assert dd_lib.detect_vcs(self.tmpdir) == "hg"
+
+    def test_agents_override_wins_over_legacy(self):
+        self._write_override("hg", folder=".claude")
+        self._write_override("perforce")
+        assert dd_lib.detect_vcs(self.tmpdir) == "perforce"
 
     # --- Auto-detection ---
 
@@ -223,15 +234,39 @@ class TestResolveProjectRoot:
 
     def setup_method(self):
         self.repo = make_temp_dir()
-        self.claude_dir = os.path.join(self.repo, ".claude")
-        os.makedirs(self.claude_dir)
 
     def teardown_method(self):
         shutil.rmtree(self.repo, ignore_errors=True)
 
-    def _write_config(self, content):
-        with open(os.path.join(self.claude_dir, "dd-projects-root"), "w") as f:
+    def _write_config(self, content, folder=".agents"):
+        config_dir = os.path.join(self.repo, folder)
+        os.makedirs(config_dir, exist_ok=True)
+        with open(os.path.join(config_dir, "dd-projects-root"), "w") as f:
             f.write(content)
+
+    def test_legacy_claude_config_still_read(self):
+        target = make_temp_dir()
+        try:
+            self._write_config(target, folder=".claude")
+            assert dd_lib.resolve_project_root(self.repo, None) == target
+        finally:
+            shutil.rmtree(target, ignore_errors=True)
+
+    def test_agents_config_wins_over_legacy(self):
+        legacy, target = make_temp_dir(), make_temp_dir()
+        try:
+            self._write_config(legacy, folder=".claude")
+            self._write_config(target)
+            assert dd_lib.resolve_project_root(self.repo, None) == target
+        finally:
+            shutil.rmtree(legacy, ignore_errors=True)
+            shutil.rmtree(target, ignore_errors=True)
+
+    def test_bad_path_error_names_the_file_it_came_from(self, capsys):
+        self._write_config("/tmp/nonexistent_dd_xyz_abc", folder=".claude")
+        with pytest.raises(SystemExit):
+            dd_lib.resolve_project_root(self.repo, None)
+        assert os.path.join(".claude", "dd-projects-root") in capsys.readouterr().err
 
     # T-029
     def test_no_override_no_config_returns_repo_root(self):

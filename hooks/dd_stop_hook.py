@@ -3,7 +3,7 @@
 dd_stop_hook.py — Stop hook for Daydream Dictation.
 
 Registered in the daydream-dictation skill's frontmatter, so it runs only
-while the skill is active (ADR-0002, ADR-0006). Each time Claude finishes
+while the skill is active (ADR-0002, ADR-0006). Each time the agent finishes
 responding it runs three steps in order, in one process so nothing races:
 
   1. Backfill prompts held by a session-start or resume marker (ADR-0005).
@@ -11,9 +11,9 @@ responding it runs three steps in order, in one process so nothing races:
   3. Check for uncommitted changes, untracked files, and unpushed commits.
 
 Exit codes:
-  0 — repo is clean; Claude is allowed to stop.
-  2 — violations found; blocks Claude from stopping. The stderr message
-      is fed back to Claude, which is expected to commit/push and retry.
+  0 — repo is clean; the agent is allowed to stop.
+  2 — violations found; blocks the agent from stopping. The stderr message
+      is fed back to the agent, which is expected to commit/push and retry.
       (Exit code 2 is the Claude Code convention for "blocking error".)
 
 Supports multiple VCS backends via dd_lib.detect_vcs().
@@ -23,9 +23,9 @@ import os
 import subprocess
 import sys
 
-# Import the shared libraries from the scripts/ directory alongside hooks/
+# Import the shared libraries from the daydream-dictation skill's scripts/ folder
 _PLUGIN_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.insert(0, os.path.join(_PLUGIN_ROOT, "scripts"))
+sys.path.insert(0, os.path.join(_PLUGIN_ROOT, "skills", "daydream-dictation", "scripts"))
 import dd_lib as dd
 import dd_prompt_log as pl
 
@@ -154,7 +154,7 @@ def main() -> None:
     repo_root = dd.find_repo_root()
 
     # Steps 1 and 2: backfill and commit. Failures fall through to the
-    # check, which asks Claude to commit whatever is left.
+    # check, which asks the agent to commit whatever is left.
     try:
         result = pl.backfill(data, repo_root)
         if result:

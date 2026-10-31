@@ -1,6 +1,6 @@
 # Voice Dictation Variants — Example Template
 
-This file shows the format for listing words your voice dictation software commonly confuses. Create your own file at `.claude/dd-voice-variants.md` in your repository root. The agent will check it during dictation sessions and silently substitute the correct word when it sees a listed variant.
+This file shows the format for listing words your voice dictation software commonly confuses. Create your own file at `.agents/dd-voice-variants.md` in your repository root. (Older setups used `.claude/dd-voice-variants.md`, which is still read.) The agent will check it during dictation sessions and silently substitute the correct word when it sees a listed variant.
 
 ## Format
 
@@ -27,4 +27,4 @@ The user's voice dictation software frequently misspells "Correct Phrase". When 
 - Cube er net ease
 ```
 
-Add your own entries based on words your dictation software consistently gets wrong. The more specific the list, the better Claude can clean up your transcriptions.
+Add your own entries based on words your dictation software consistently gets wrong. The more specific the list, the better the agent can clean up your transcriptions.

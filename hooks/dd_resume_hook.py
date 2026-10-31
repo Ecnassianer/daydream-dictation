@@ -10,7 +10,7 @@ session used the daydream-dictation skill, this hook:
   * writes a resume note to the active project's Prompts doc;
   * leaves a resume marker so the skill's hooks backfill the prompts sent
     before the skill is re-invoked;
-  * tells Claude to invoke the skill again.
+  * tells the agent to invoke the skill again.
 
 Otherwise it exits without doing anything.
 """
@@ -19,9 +19,9 @@ import json
 import os
 import sys
 
-# Import the shared libraries from the scripts/ directory alongside hooks/
+# Import the shared libraries from the daydream-dictation skill's scripts/ folder
 _PLUGIN_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sys.path.insert(0, os.path.join(_PLUGIN_ROOT, "scripts"))
+sys.path.insert(0, os.path.join(_PLUGIN_ROOT, "skills", "daydream-dictation", "scripts"))
 import dd_lib as dd
 import dd_prompt_log as pl
 

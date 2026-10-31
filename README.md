@@ -123,6 +123,16 @@ Each project gets a folder with three documents:
 
 Optional companion documents (`DecisionTrace-`, `StringTable-`, `DebugTools-`) can be added as a project grows.
 
+Project-specific instructions (for example, localization rules) go in an `AGENTS.md` in the project folder, which most coding agents read. Next to it, keep a short `CLAUDE.md` that points at it, so older versions of Claude Code load the same instructions:
+
+```markdown
+See the AGENTS.md file for further instructions.
+
+@AGENTS.md
+```
+
+The `@AGENTS.md` line makes Claude Code import the file rather than just mention it. The `CLAUDE.md` pointer is planned for removal around October 2027 ([ADR-0008](docs/decisions/0008-use-agents-md-for-per-project-instructions.md)).
+
 ## Hooks
 
 The dictation hooks run only while the `daydream-dictation` skill is active: from the moment it's invoked until `/clear` or the end of the session. Sessions that never use the skill run none of them ([ADR-0002](docs/decisions/0002-scope-dictation-hooks-to-the-active-skill.md)).
@@ -140,11 +150,25 @@ One hook is always registered: a **SessionStart** hook that runs only when a ses
 - Perforce
 - Unity VCS / Plastic SCM
 
-Override auto-detection by creating `.claude/dd-vcs` with the VCS name.
+Override auto-detection by creating `.agents/dd-vcs` with the VCS name.
 
 ## Voice Variants
 
-Create `.claude/dd-voice-variants.md` in your repo to list words your dictation software commonly confuses. See `skills/daydream-dictation/example-voice-variants.md` for the format.
+Create `.agents/dd-voice-variants.md` in your repo to list words your dictation software commonly confuses. See `skills/daydream-dictation/references/example-voice-variants.md` for the format.
+
+## Config files
+
+Daydream Dictation's repo-level settings live in `.agents/` at the repo root, a folder that any coding agent can use:
+
+| File | Purpose |
+| --- | --- |
+| `.agents/dd-vcs` | Override VCS auto-detection |
+| `.agents/dd-projects-root` | Create new project folders under this absolute path instead of the repo root |
+| `.agents/dd-voice-variants.md` | Words your dictation software commonly confuses |
+
+Earlier versions kept these files in `.claude/`. That location is still read when there's no `.agents/` copy, until about October 2027 ([ADR-0009](docs/decisions/0009-move-config-and-state-out-of-the-claude-folder.md)). To migrate, move the files: `mkdir -p .agents && mv .claude/dd-* .agents/` (use `git mv` for any that are committed).
+
+The hooks keep per-session state outside the repo, in `$XDG_STATE_HOME/daydream-dictation/sessions/` (by default `~/.local/state/daydream-dictation/sessions/`). Set `DD_STATE_DIR` to use a different folder.
 
 ## Contributing
 
