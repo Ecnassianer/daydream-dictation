@@ -2,8 +2,13 @@
 """
 dd_stop_hook.py — Stop hook for Daydream Dictation.
 
-Fires when a session ends or Claude finishes responding. Checks for
-uncommitted changes, untracked files, and unpushed commits.
+Registered in the daydream-dictation skill's frontmatter, so it runs only
+while the skill is active (ADR-0002, ADR-0006). Each time Claude finishes
+responding it runs three steps in order, in one process so nothing races:
+
+  1. Backfill prompts held by a session-start or resume marker (ADR-0005).
+  2. Commit and push those entries per the skill's commit discipline.
+  3. Check for uncommitted changes, untracked files, and unpushed commits.
 
 Exit codes:
   0 — repo is clean; Claude is allowed to stop.
@@ -14,15 +19,15 @@ Exit codes:
 Supports multiple VCS backends via dd_lib.detect_vcs().
 """
 
-import json
 import os
 import subprocess
 import sys
 
-# Import dd_lib from the scripts/ directory alongside hooks/
-_PLUGIN_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Import the shared libraries from the scripts/ directory alongside hooks/
+_PLUGIN_ROOT = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.insert(0, os.path.join(_PLUGIN_ROOT, "scripts"))
 import dd_lib as dd
+import dd_prompt_log as pl
 
 
 def _run_quiet(cmd: list[str], cwd: str) -> subprocess.CompletedProcess:
@@ -145,17 +150,23 @@ def check_unity_vcs(repo_root: str) -> None:
 # ---------------------------------------------------------------------------
 
 def main() -> None:
-    raw = sys.stdin.read()
+    data = pl.read_hook_input()
+    repo_root = dd.find_repo_root()
+
+    # Steps 1 and 2: backfill and commit. Failures fall through to the
+    # check, which asks Claude to commit whatever is left.
     try:
-        data = json.loads(raw)
-    except json.JSONDecodeError:
-        data = {}
+        result = pl.backfill(data, repo_root)
+        if result:
+            pl.commit_backfill(repo_root, result)
+    except OSError as e:
+        print(f"dd-stop-hook: WARNING — could not backfill prompts: {e}", file=sys.stderr)
 
     # Recursion prevention
     if data.get("stop_hook_active") is True:
         sys.exit(0)
 
-    repo_root = dd.find_repo_root()
+    # Step 3: cleanliness check
     vcs = dd.detect_vcs(repo_root)
 
     if vcs is None:

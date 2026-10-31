@@ -18,6 +18,7 @@ Use `/dd-teach` to learn the process interactively, tailored to your experience 
 
 - Python 3.9+
 - Git (or another supported VCS)
+- Claude Code 2.1.94 or later (earlier versions silently ignore hooks in a plugin skill's frontmatter)
 
 There are three installation methods depending on how you run Claude Code.
 
@@ -47,97 +48,42 @@ The Desktop app supports plugins for local and SSH sessions (not remote sessions
 
 ---
 
-### Method 3 — Claude Code Cloud or manual install
+### Method 3 — Claude Code cloud sessions (claude.ai/code)
 
-Claude.ai/code (remote cloud sessions) does not support the plugin system. Install manually instead.
+Cloud sessions don't install plugins from a marketplace, but they load a plugin directory named in `CLAUDE_CODE_PLUGIN_DIRS`. Configure your cloud environment once, in its settings on claude.ai, and every cloud session that uses that environment gets the full plugin, whatever the repo ([ADR-0007](docs/decisions/0007-load-the-plugin-in-cloud-sessions-with-claude-code-plugin-dirs.md)).
 
-**Step 1 — Clone the plugin into your repo:**
+**Setup script:**
 
 ```bash
-git clone https://github.com/Ecnassianer/daydream-dictation.git DaydreamDictationSkill/CompletedSkill
+git clone --depth 1 https://github.com/Ecnassianer/daydream-dictation.git /opt/daydream-dictation || true
 ```
 
-**Step 2 — Wire up hooks in `.claude/settings.json`:**
+**Environment variable:**
+
+```text
+CLAUDE_CODE_PLUGIN_DIRS=/opt/daydream-dictation
+```
+
+The environment needs network access to github.com; the default **Trusted** level allows it.
+
+**Updating:** cloud environments cache the setup script's result for about a week, so new plugin versions arrive when that cache rebuilds. To control the version, clone a release tag (`--branch v0.3.0`) and change the tag to update.
+
+**Upgrading from the old manual install:** earlier versions of this README had cloud users clone the plugin into their repo, wire its hooks into `.claude/settings.json`, and list the skills in `CLAUDE.md`. That setup no longer works, because the dictation hooks are registered only when the skill is actually invoked. Remove the cloned folder, the Daydream Dictation hook entries in `.claude/settings.json`, and the skill list in `CLAUDE.md`, then configure the environment as above.
+
+---
+
+### Let Claude start the skill on its own
+
+The `daydream-dictation` skill registers hooks, so Claude Code asks for permission before Claude invokes it by itself (typing `/daydream-dictation` yourself never asks). After a resumed session, Claude needs to re-invoke the skill to restore prompt logging, so allow it in your settings:
 
 ```json
 {
-  "hooks": {
-    "UserPromptSubmit": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 DaydreamDictationSkill/CompletedSkill/hooks/dd_log_prompt.py",
-            "timeout": 10
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 DaydreamDictationSkill/CompletedSkill/hooks/dd_stop_hook.py",
-            "timeout": 15
-          }
-        ]
-      }
-    ]
+  "permissions": {
+    "allow": ["Skill(daydream-dictation:daydream-dictation)"]
   }
 }
 ```
 
-If you already have other settings in this file, merge the `hooks` key in — don't replace the whole file.
-
-**Step 3 — Reference the skills in `CLAUDE.md`:**
-
-```markdown
-## Daydream Dictation Skills (manually installed)
-
-The following skills are available. Read the referenced SKILL.md file when invoked:
-
-- **daydream-dictation** — Main workflow skill. See `DaydreamDictationSkill/CompletedSkill/skills/daydream-dictation/SKILL.md`
-- **dd-gap-analysis** — Gap analysis skill. See `DaydreamDictationSkill/CompletedSkill/skills/dd-gap-analysis/SKILL.md`
-- **dd-teach** — Interactive onboarding. See `DaydreamDictationSkill/CompletedSkill/skills/dd-teach/SKILL.md`
-- **dictate-daydream** — Alias for daydream-dictation. See `DaydreamDictationSkill/CompletedSkill/skills/dictate-daydream/SKILL.md`
-
-When the user invokes any of these skills, read the corresponding SKILL.md and follow its instructions.
-
-## Utility Scripts
-
-- `dd_init_project.py` — Create a new project: `python3 DaydreamDictationSkill/CompletedSkill/scripts/dd_init_project.py "Project Name"`
-- `dd_switch_project.py` — Switch active project: `python3 DaydreamDictationSkill/CompletedSkill/scripts/dd_switch_project.py "ProjectSlug"`
-```
-
-**Step 4 — Fix tests for cloud environments (optional):**
-
-Cloud environments often have `commit.gpgsign=true` set globally, which causes the integration tests to fail. To fix this, add the following line to both `_make_git_repo()` and `_make_git_repo_with_remote()` in `tests/test_integration.py`, immediately after the `git config user.name` line:
-
-```python
-subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=tmpdir, capture_output=True)
-```
-
-For `_make_git_repo_with_remote()`, use `cwd=work` instead of `cwd=tmpdir`. Then run:
-
-```shell
-cd DaydreamDictationSkill/CompletedSkill
-pip install pytest
-python3 -m pytest tests/ -v
-```
-
-All 75 tests should pass.
-
-**Step 5 — Verify hooks are active:**
-
-After updating `settings.json`, run `/hooks` or start a new session to activate the hooks. To confirm the `UserPromptSubmit` hook is working, type a message and check that it appears in `Prompts-ddMetadiscussion` (or your active project's Prompts file).
-
-**What you get:**
-
-- **Prompt logging** — Every message is automatically appended to the active project's Prompts document
-- **Stop guard** — Claude won't stop until all changes are committed and pushed
-- **Skills** — `daydream-dictation`, `dd-gap-analysis`, `dd-teach`, and `dictate-daydream` are all available via CLAUDE.md references
-- **Project management** — `dd_init_project.py` and `dd_switch_project.py` work identically to the plugin version
 
 ## Usage
 
@@ -179,10 +125,13 @@ Optional companion documents (`DecisionTrace-`, `StringTable-`, `DebugTools-`) c
 
 ## Hooks
 
-The plugin includes two hooks that fire automatically:
+The dictation hooks run only while the `daydream-dictation` skill is active: from the moment it's invoked until `/clear` or the end of the session. Sessions that never use the skill run none of them ([ADR-0002](docs/decisions/0002-scope-dictation-hooks-to-the-active-skill.md)).
 
-- **UserPromptSubmit** -- Logs every prompt to the active project's Prompts document
-- **Stop** -- Checks for uncommitted or unpushed changes before Claude stops responding
+- **UserPromptSubmit** -- Logs each prompt to the active project's Prompts document. With no active project, nothing is logged.
+- **Stop** -- Logs the prompt that started the session, commits it, and checks for uncommitted or unpushed changes before Claude stops responding.
+- **StopFailure** -- Makes sure the session-start or resume backfill still happens when a turn ends with an API error.
+
+One hook is always registered: a **SessionStart** hook that runs only when a session is resumed or continued. If the session was a dictation session, it notes the resume in the Prompts document and asks Claude to re-invoke the skill; the prompts sent in between are backfilled automatically ([ADR-0005](docs/decisions/0005-recover-prompts-after-a-resumed-session.md)).
 
 ## Supported VCS
 
@@ -200,6 +149,13 @@ Create `.claude/dd-voice-variants.md` in your repo to list words your dictation 
 ## Contributing
 
 Significant design decisions about the plugin are recorded as Architecture Decision Records in [`docs/decisions/`](docs/decisions/README.md). Read that folder's README before proposing a change that affects how the plugin works, and add an ADR when you make a decision worth remembering.
+
+Run the tests with:
+
+```shell
+pip install pytest
+python3 -m pytest tests/ -v
+```
 
 ## License
 

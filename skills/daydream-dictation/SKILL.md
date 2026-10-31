@@ -9,6 +9,25 @@ allowed-tools:
   - Bash
   - Glob
   - Grep
+# Prompt logging and commit checks run only while this skill is active
+# (docs/decisions/0002). ${CLAUDE_PLUGIN_ROOT} is the plugin root for both
+# supported installs: a marketplace install and CLAUDE_CODE_PLUGIN_DIRS.
+hooks:
+  UserPromptSubmit:
+    - hooks:
+        - type: command
+          command: 'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/dd_log_prompt.py"'
+          timeout: 10
+  Stop:
+    - hooks:
+        - type: command
+          command: 'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/dd_stop_hook.py"'
+          timeout: 60
+  StopFailure:
+    - hooks:
+        - type: command
+          command: 'python3 "${CLAUDE_PLUGIN_ROOT}/hooks/dd_stop_failure_hook.py"'
+          timeout: 60
 ---
 
 # Daydream Dictation — Agent Behavior
@@ -42,13 +61,13 @@ When the user tells you which project to work on:
 3. **Read the tail of the Prompts document** — last 20–30 entries. Do not read the entire file; it can be very long.
 4. **Read the entire Daydream document** - this is the canonical central text for everything we're working on.
 5. **Take note of any other documents referenced in the Daydream document** - more complex designs will spin off specialized docs. Make sure you understand what things go in which document, but you don't have to read each one until its relevant.
-6. **Confirm the prompt logging hook is firing** — check whether new entries appear after the user's next prompt.
+6. **Confirm the prompt logging hook is firing** — at the end of this turn, the prompt that started the session is logged under a `▶ Session started` note. After that, check whether new entries appear after the user's next prompt.
 
 ### The `dd-current-dictation-project` State File
 
 A plain text file at the repo root containing the absolute path to the currently active **project folder**. Not tracked by git (should be listed in `.gitignore`).
 
-The `UserPromptSubmit` hook reads this folder path and dynamically finds the Prompts file inside it, where it appends the raw text prompt. The raw prompts are very useful in phase 3 in particular.
+This skill's hooks read this folder path and dynamically find the Prompts file inside it, where they append the raw text prompt. The raw prompts are very useful in phase 3 in particular. With no project set, nothing is logged.
 
 The file is not automatically cleared between sessions — it persists. Always update it with the script when the user names a project they want to work on.
 
@@ -134,7 +153,7 @@ Every project has a companion Prompts document (`Prompts-<Slug>.md`) that logs e
 - **Never delete logged prompts**, even if they seem off-topic.
 - **Manually updating prompts**, if the user asks you to clean up the prompts doc, be conservative. For instance, if a prompt clearly belongs to a different project, move it — but never discard it entirely. 
 - **Prompts doc lists prompts verbatim**, transcription errors and all. The raw wording is part of the record.
-- **Session-opening prompts stay in `Prompts-ddMetadiscussion`** — the hook fires before you set `dd-current-dictation-project`, so the first prompt of any session is logged there. This is correct and intentional. Do not move it into the project's Prompts document.
+- **Hook-written notes and labels are part of the record.** Lines starting with `> ▶ Session started` or `> ⟳ Session resumed`, and entry labels such as `(session start)`, `(backfilled at session start)` and `(backfilled after resume)`, are written by the hooks. Don't edit or remove them.
 - **Co-commit rule:** Prompt log entries belong in the same commit as the document changes they accompany. Do not commit the Prompts doc ahead of the corresponding work.
 
 ### Why We Keep It
@@ -146,7 +165,9 @@ Every project has a companion Prompts document (`Prompts-<Slug>.md`) that logs e
 
 ### Backfilling Missed Prompts
 
-If prompts were not captured automatically, add them manually in order. Use the conversation history to reconstruct exact wording. Number sequentially from the last captured entry. Commit with a note that entries were backfilled. Immediately notify the user that something is wrong with the prompt logging. If hook failures persist across sessions, suggest reporting it as a bug on the skill's GitHub repo.
+The hooks backfill automatically in two cases: the prompt that started the session (plus anything sent before a project was chosen), and prompts sent after a resumed session but before the skill was re-invoked. Those entries appear under a session-start or resume note with a label.
+
+If prompts were still not captured, add them manually in order. Use the conversation history to reconstruct exact wording. Number sequentially from the last captured entry. Commit with a note that entries were backfilled. Immediately notify the user that something is wrong with the prompt logging. If hook failures persist across sessions, suggest reporting it as a bug on the skill's GitHub repo.
 
 ### Handling merges
 
@@ -214,7 +235,7 @@ If the user is done working on a specific project, you can clear the active proj
 ```bash
 python3 ${CLAUDE_PLUGIN_ROOT}/scripts/dd_switch_project.py --clear
 ```
-Prompts will then log to `Prompts-ddMetadiscussion` at the repo root.
+Prompts will then not be logged anywhere until a project is set again.
 
 ---
 
@@ -242,6 +263,19 @@ These are not created by `dd_init_project.py` — create them when a project nee
 - Daydream doc and Prompts doc committed together when both change in the same turn
 - Prompt log entries belong in the same commit as the work they accompany
 - The Stop hook will warn if there are uncommitted or unpushed changes
+- When the hooks backfill prompts at the end of a turn, the Stop hook commits them itself: folded into your last commit if it isn't pushed yet, otherwise as its own commit, then pushed
+
+---
+
+## Resumed Sessions
+
+When a dictation session is resumed or continued, this skill's prompt logging and commit checks stop. The plugin's resume hook writes a `⟳ Session resumed` note to the Prompts doc and tells you to invoke this skill again. When you see that instruction:
+
+- Invoke the `daydream-dictation` skill again before doing anything else.
+- Don't repeat the session-start steps or greeting. The project and context are already set; continue with the user's request.
+- Don't log the prompts sent since the resume yourself. The hooks backfill them automatically.
+
+After `/clear`, the skill and its hooks are gone on purpose. Don't re-invoke it unless the user starts dictating again.
 
 ---
 
@@ -292,4 +326,3 @@ Version control is **required**. The diff review phase depends on being able to 
 
 Any file or artifact that lives outside a project folder and is part of the Daydream Dictation system must be prefixed with `dd-`. This distinguishes skill infrastructure from the user's work.
 
-**Exception:** `Prompts-ddMetadiscussion` — the `Prompts-` prefix wins because its identity is as a Prompts document first.

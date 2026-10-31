@@ -1,23 +1,14 @@
 {
+  "description": "Daydream Dictation's only always-registered hook: after a resume, restore the dictation skill's hooks. The prompt-logging and commit hooks live in skills/daydream-dictation/SKILL.md and run only while the skill is active.",
   "hooks": {
-    "UserPromptSubmit": [
+    "SessionStart": [
       {
+        "matcher": "resume",
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dd_log_prompt.py",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/dd_resume_hook.py\"",
             "timeout": 10
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/dd_stop_hook.py",
-            "timeout": 15
           }
         ]
       }

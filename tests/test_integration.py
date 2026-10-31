@@ -32,6 +32,7 @@ def _make_git_repo():
     subprocess.run(["git", "init"], cwd=tmpdir, capture_output=True)
     subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=tmpdir, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Test"], cwd=tmpdir, capture_output=True)
+    subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=tmpdir, capture_output=True)
     readme = os.path.join(tmpdir, "README.md")
     with open(readme, "w") as f:
         f.write("# test\n")
@@ -40,14 +41,25 @@ def _make_git_repo():
     return tmpdir
 
 
+# Hook session state goes to a throwaway directory, not ~/.claude.
+_STATE_DIR = tempfile.mkdtemp(prefix="dd_state_")
+
+
 def _run_script(script, args, cwd, stdin_data=None):
     """Run a Python script as a subprocess."""
     cmd = [sys.executable, script] + args
     return subprocess.run(
         cmd, cwd=cwd, capture_output=True, text=True,
         input=stdin_data,
-        env={**os.environ, "PYTHONIOENCODING": "utf-8"},
+        env={**os.environ, "PYTHONIOENCODING": "utf-8", "DD_STATE_DIR": _STATE_DIR},
     )
+
+
+def _untracked(repo):
+    """List untracked files in a git repo."""
+    r = subprocess.run(["git", "ls-files", "--others", "--exclude-standard"],
+                       cwd=repo, capture_output=True, text=True)
+    return r.stdout.split()
 
 
 # ---------------------------------------------------------------------------
@@ -155,15 +167,12 @@ class TestLogPromptIntegration:
         data = json.dumps({"prompt": text})
         return _run_script(_LOG_PROMPT, [], self.repo, stdin_data=data)
 
-    def test_creates_metadiscussion_if_missing(self):
-        """T-068: Prompts-ddMetadiscussion created on first fallback prompt."""
-        # No state file at all
+    def test_no_project_logs_nothing(self):
+        """T-068 (ADR-0003): with no state file, nothing is logged anywhere."""
         r = self._log_prompt("hello world")
         assert r.returncode == 0
-        meta = os.path.join(self.repo, "Prompts-ddMetadiscussion")
-        assert os.path.isfile(meta)
-        with open(meta, encoding="utf-8") as f:
-            assert "hello world" in f.read()
+        assert not os.path.exists(os.path.join(self.repo, "Prompts-ddMetadiscussion"))
+        assert _untracked(self.repo) == []
 
     def test_numbering_starts_at_one(self):
         """T-060: First prompt in a fresh file gets number 1."""
@@ -197,14 +206,11 @@ class TestLogPromptIntegration:
         with open(prompts, encoding="utf-8") as f:
             assert raw in f.read()
 
-    def test_empty_state_file_falls_back(self):
-        """T-063: Empty state file causes fallback to Prompts-ddMetadiscussion."""
+    def test_empty_state_file_logs_nothing(self):
+        """T-063 (ADR-0003): an empty state file means no active project; nothing is logged."""
         self._set_project("")
-        self._log_prompt("should go to meta")
-        meta = os.path.join(self.repo, "Prompts-ddMetadiscussion")
-        assert os.path.isfile(meta)
-        with open(meta, encoding="utf-8") as f:
-            assert "should go to meta" in f.read()
+        self._log_prompt("should not be logged")
+        assert not os.path.exists(os.path.join(self.repo, "Prompts-ddMetadiscussion"))
 
     def test_digit_line_doesnt_inflate_count(self):
         """T-071: Lines starting with digits but not matching 'N. ' don't inflate numbering."""
@@ -303,11 +309,10 @@ class TestStateManagement:
             f.write(f"# Prompts\n\n")
         return project_dir
 
-    def test_missing_state_file_falls_back(self):
-        """T-084: No state file → Prompts-ddMetadiscussion."""
+    def test_missing_state_file_logs_nothing(self):
+        """T-084 (ADR-0003): no state file → nothing is logged."""
         self._log_prompt("no state file")
-        meta = os.path.join(self.repo, "Prompts-ddMetadiscussion")
-        assert os.path.isfile(meta)
+        assert not os.path.exists(os.path.join(self.repo, "Prompts-ddMetadiscussion"))
 
     def test_trailing_whitespace_handled(self):
         """T-087: Trailing whitespace/newlines in state file are handled."""
@@ -327,14 +332,11 @@ class TestStateManagement:
         )
         assert r.stdout.strip() == ""
 
-    def test_empty_state_redirects_to_meta(self):
-        """T-091: Empty string in state file → Prompts-ddMetadiscussion."""
+    def test_empty_state_logs_nothing(self):
+        """T-091 (ADR-0003): empty string in state file → nothing is logged."""
         self._set_state("")
         self._log_prompt("empty state")
-        meta = os.path.join(self.repo, "Prompts-ddMetadiscussion")
-        assert os.path.isfile(meta)
-        with open(meta, encoding="utf-8") as f:
-            assert "empty state" in f.read()
+        assert not os.path.exists(os.path.join(self.repo, "Prompts-ddMetadiscussion"))
 
     def test_switch_script_clear(self):
         """T-090: dd_switch_project.py --clear empties the state file."""
@@ -346,14 +348,12 @@ class TestStateManagement:
         with open(state, encoding="utf-8") as f:
             assert f.read().strip() == ""
 
-    def test_stale_state_falls_back(self):
-        """T-085: State file pointing to nonexistent folder → Prompts-ddMetadiscussion."""
+    def test_stale_state_logs_nothing(self):
+        """T-085 (ADR-0003): state file pointing to a missing folder → nothing is logged."""
         self._set_state("/nonexistent/folder/that/does/not/exist")
-        self._log_prompt("stale state")
-        meta = os.path.join(self.repo, "Prompts-ddMetadiscussion")
-        assert os.path.isfile(meta)
-        with open(meta, encoding="utf-8") as f:
-            assert "stale state" in f.read()
+        r = self._log_prompt("stale state")
+        assert r.returncode == 0
+        assert not os.path.exists(os.path.join(self.repo, "Prompts-ddMetadiscussion"))
 
 
 # ---------------------------------------------------------------------------
@@ -369,6 +369,7 @@ def _make_git_repo_with_remote():
     subprocess.run(["git", "clone", bare, work], capture_output=True)
     subprocess.run(["git", "config", "user.email", "test@test.com"], cwd=work, capture_output=True)
     subprocess.run(["git", "config", "user.name", "Test"], cwd=work, capture_output=True)
+    subprocess.run(["git", "config", "commit.gpgsign", "false"], cwd=work, capture_output=True)
     readme = os.path.join(work, "README.md")
     with open(readme, "w") as f:
         f.write("# test\n")
