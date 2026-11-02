@@ -41,10 +41,11 @@ Run these commands inside Claude Code:
 The Desktop app supports plugins for local and SSH sessions (not remote sessions).
 
 1. Click **Customize** in the left sidebar.
-2. Next to **Personal plugins**, click the **+** button, then select **Create plugin > Add marketplace**.
-3. In the **Add marketplace** dialog, enter `ecnassianer/daydream-dictation` and click **Sync**.
-4. Click **+** next to Personal plugins again, then select **Browse plugins**.
-5. Open the **Personal** tab, find the **Daydream Dictation** tile, and click **+** to install it.
+2. Swich to the **Plugins** tab.
+3. Click the **+** button, then select **Add marketplace**.
+4. In the **Add marketplace** dialog, enter `ecnassianer/daydream-dictation` and click **Sync**.
+5. Click **+** next to Personal plugins again, then select **Browse plugins**.
+6. Open the **Personal** tab, find the **Daydream Dictation** tile, and click **+** to install it.
 
 ---
 
