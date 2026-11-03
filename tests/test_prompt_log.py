@@ -233,6 +233,7 @@ class TestSessionStart:
         """Meta entries, tool results, notifications and interrupts are not logged."""
         s.add(command("daydream-dictation", "start"), skill_text(), tool_result(),
               prompt("<task-notification>\n<status>completed</status>\n</task-notification>"),
+              prompt('<agent-message from="researcher">\nReport\n</agent-message>'),
               prompt("[Request interrupted by user]"),
               prompt("<local-command-stdout>done</local-command-stdout>"),
               prompt("real answer"))

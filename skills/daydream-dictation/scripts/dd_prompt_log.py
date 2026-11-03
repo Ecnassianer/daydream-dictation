@@ -42,11 +42,13 @@ import dd_lib as dd
 _SKILL_NAMES = ("daydream-dictation", "dictate-daydream")
 
 # Claude Code delivers some automated events (background task results, PR
-# webhook activity) into the session as prompts. They aren't user prompts,
-# so they don't belong in any Prompts document.
+# webhook activity, subagent reports) into the session as prompts. They
+# aren't user prompts, so they don't belong in any Prompts document.
+# <agent-message> carries attributes (from="..."), so its prefix has no ">".
 _AUTOMATED_PREFIXES = (
     "<task-notification>",
     "<github-webhook-activity>",
+    "<agent-message ",
 )
 
 # Transcript user entries that aren't prompts the user typed.
