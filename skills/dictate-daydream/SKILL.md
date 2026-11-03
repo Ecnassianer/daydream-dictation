@@ -4,7 +4,7 @@ description: Alias for /daydream-dictation. Starts a Daydream Dictation session.
 argument-hint: "[project name]"
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.5.0"
 ---
 
 # Dictate Daydream

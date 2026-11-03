@@ -4,7 +4,7 @@ description: Voice-driven document authoring using the Daydream Dictation workfl
 license: MIT
 compatibility: Requires Python 3 and a supported VCS with diffing (git with GitHub, Mercurial, Perforce or Unity Version Control). Prompt logging and commit checks use Claude Code skill hooks; other agents run the skill without them.
 metadata:
-  version: "0.1.0"
+  version: "0.5.0"
 allowed-tools: Read Write Edit Bash Glob Grep
 # Prompt logging and commit checks run only while this skill is active
 # (docs/decisions/0002). ${CLAUDE_PLUGIN_ROOT} is the plugin root for both
