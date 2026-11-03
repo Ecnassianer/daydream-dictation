@@ -4,7 +4,7 @@ description: Run a structured gap analysis on any design document or project fol
 argument-hint: "[project folder or name]"
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.5.0"
 allowed-tools: Read Glob Grep
 ---
 

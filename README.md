@@ -184,7 +184,7 @@ python3 -m pytest tests/ -v
 
 On Windows, use `python` or `py -3` in place of `python3`.
 
-To release, bump `version` in both `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. When that change reaches `main`, the Release workflow tags it `v<version>` and creates a GitHub release.
+To release, run `python3 tools/bump_version.py <new version>` and merge the change to `main`. The Release workflow then tags it `v<version>` and creates a GitHub release. See [`AGENTS.md`](AGENTS.md) for the full steps.
 
 ## License
 

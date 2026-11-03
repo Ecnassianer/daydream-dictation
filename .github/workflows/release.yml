@@ -10,6 +10,7 @@ on:
       - .claude-plugin/plugin.json
       - .claude-plugin/marketplace.json
       - .github/workflows/release.yml
+      - tools/bump_version.py
   workflow_dispatch:
 
 permissions:
@@ -24,13 +25,9 @@ jobs:
       - name: Read version
         id: version
         run: |
-          plugin=$(jq -r .version .claude-plugin/plugin.json)
-          marketplace=$(jq -r '.plugins[] | select(.name == "daydream-dictation") | .version' .claude-plugin/marketplace.json)
-          if [ "$plugin" != "$marketplace" ]; then
-            echo "::error::plugin.json is $plugin but marketplace.json is $marketplace"
-            exit 1
-          fi
-          echo "tag=v$plugin" >> "$GITHUB_OUTPUT"
+          # Fails if any version field disagrees with plugin.json.
+          version=$(python3 tools/bump_version.py --check)
+          echo "tag=v$version" >> "$GITHUB_OUTPUT"
 
       - name: Create release
         env:
