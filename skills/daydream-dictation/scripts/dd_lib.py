@@ -198,7 +198,7 @@ def checkpoint_unity_vcs(files: list[str], msg: str, repo_root: str) -> None:
 def checkpoint(files: list[str], msg: str, repo_root: str, vcs: str | None) -> None:
     """Commit and push files using the appropriate VCS. No-op if vcs is None."""
     if vcs is None:
-        print("\n  No VCS detected — skipping commit.")
+        print("\n  No VCS detected — skipping commit. Set up Git with a GitHub remote, then commit.")
         return
     print(f"\nCommitting and pushing ({vcs})...")
     dispatch = {

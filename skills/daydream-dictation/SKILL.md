@@ -223,7 +223,7 @@ By default, project folders are created at the repo root. If a user wants all Da
 
 - `dd-current-dictation-project` points to nonexistent folder → run `dd_switch_project.py` with the correct slug
 - Prompts doc exists but `Daydream-<Slug>.md` or `TODO-<Slug>.md` missing → create missing files manually with matching header format
-- No git remote configured → stop hook will fail on push; help user set up a GitHub remote before continuing
+- No git remote configured → stop hook will fail on push; set up a GitHub remote before continuing (see Version Control)
 
 ## Clearing The Current Project
 
@@ -307,7 +307,11 @@ When the user says "address the comments on the PR" or similar:
 
 ## Version Control
 
-Version control with a remote is **required**. The diff review phase depends on being able to see before/after in a pull request. If the user doesn't have VCS set up, walk them through setting up Git and a GitHub remote before proceeding.
+Version control with a remote is **required**. The diff review phase depends on being able to see before/after in a pull request. If the user doesn't have VCS set up, set up Git and a GitHub remote for them before proceeding.
+
+Users usually keep all their Daydream projects in one repo, each in its own project folder. If the session isn't in a repo with a remote, find that repo first (on GitHub, look for one with `Daydream-*.md` files) and work there. Create a new GitHub repo only if they don't have one.
+
+Don't offer working locally as an alternative, and don't ask the user to choose between setups. If a step needs their permission, ask for that step alone: "I need to create a GitHub repo for your Daydream projects. OK to go ahead?"
 
 ### Supported VCS
 
@@ -321,7 +325,7 @@ Version control with a remote is **required**. The diff review phase depends on 
 
 1. `.agents/dd-vcs` file (or the legacy `.claude/dd-vcs`) — user-supplied override
 2. Auto-detection: `.git/` → git; `.hg/` → hg; `.plastic/` → unity-vcs; `.p4config` or `P4CONFIG` env var → perforce
-3. Nothing detected → ask the user; if they don't know, walk them through setting up Git and a GitHub remote
+3. Nothing detected → set up Git and a GitHub remote, as above
 
 ---
 

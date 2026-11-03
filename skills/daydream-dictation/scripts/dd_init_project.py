@@ -23,7 +23,7 @@ Project root resolution (first match wins):
 VCS detection order:
   1. .agents/dd-vcs file (user override; the legacy .claude/dd-vcs is still read)
   2. Auto-detection (.git, .hg, .plastic, P4CONFIG / .p4config)
-  3. Nothing detected — the agent asks the user which VCS they're using
+  3. Nothing detected — the agent sets up Git with a GitHub remote
 
 Supported VCS:
   git        — git add / commit / push

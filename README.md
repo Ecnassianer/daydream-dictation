@@ -116,7 +116,7 @@ Interactive onboarding that explains the three phases, voice dictation tips, and
 
 ## Project Structure
 
-Each project gets a folder with three documents:
+Keep all your Daydream projects in one repo. Each project gets a folder with three documents:
 
 - `Daydream-<Slug>.md` -- The main design document
 - `TODO-<Slug>.md` -- Outstanding work items
