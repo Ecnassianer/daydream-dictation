@@ -2,7 +2,7 @@
 name: daydream-dictation
 description: Voice-driven document authoring using the Daydream Dictation workflow. Activates when the user is dictating design documents, mentions a Daydream project, refers to Prompts documents or dd-current-dictation-project, or starts a dictation session.
 license: MIT
-compatibility: Requires Python 3 and a supported VCS with a remote (git with GitHub, Mercurial, Perforce or Unity Version Control). Prompt logging and commit checks use Claude Code skill hooks; other agents run the skill without them.
+compatibility: Requires Python 3 and a supported VCS with diffing (git with GitHub, Mercurial, Perforce or Unity Version Control). Prompt logging and commit checks use Claude Code skill hooks; other agents run the skill without them.
 metadata:
   version: "0.1.0"
 allowed-tools: Read Write Edit Bash Glob Grep
@@ -307,15 +307,15 @@ When the user says "address the comments on the PR" or similar:
 
 ## Version Control
 
-Version control with a remote is **required**. The diff review phase depends on being able to see before/after in a pull request. If the user doesn't have VCS set up, set up Git and a GitHub remote for them before proceeding.
+Version control is **required**. The diff review phase depends on being able to see before/after in a pull request. If the user doesn't have VCS set up, set up Git and a GitHub remote for them before proceeding.
 
-Users usually keep all their Daydream projects in one repo, each in its own project folder. If the session isn't in a repo with a remote, find that repo first (on GitHub, look for one with `Daydream-*.md` files) and work there. Create a new GitHub repo only if they don't have one.
+Users usually keep many of their Daydream projects in the same repo, each in its own project folder. If the session isn't in a repo with a remote, look for repos that are already set up with Daydream Dictation and work there.
 
-Don't offer working locally as an alternative, and don't ask the user to choose between setups. If a step needs their permission, ask for that step alone: "I need to create a GitHub repo for your Daydream projects. OK to go ahead?"
+If you can't find a repo, ask the user whether there is an existing repo or if you should create a GitHub remote.
 
 ### Supported VCS
 
-- `git` with a GitHub remote — full support; first-class default
+- `git` — full support; first-class default
 - `hg` — Mercurial
 - `perforce` (alias: `p4`) — Perforce
 - `unity-vcs` (alias: `plastic`) — Unity Version Control / Plastic SCM
