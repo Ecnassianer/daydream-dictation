@@ -254,13 +254,17 @@ class TestLogPromptIntegration:
         r2 = self._log_prompt(
             "<github-webhook-activity>\nComment: \"looks good\"\n</github-webhook-activity>"
         )
+        r3 = self._log_prompt(
+            '<agent-message from="researcher">\nResearch report\n</agent-message>'
+        )
         self._log_prompt("second prompt")
-        assert r1.returncode == 0 and r2.returncode == 0
+        assert r1.returncode == r2.returncode == r3.returncode == 0
         prompts = os.path.join(project_dir, "Prompts-TestProj.md")
         with open(prompts, encoding="utf-8") as f:
             content = f.read()
         assert "task-notification" not in content
         assert "github-webhook-activity" not in content
+        assert "agent-message" not in content
         assert "\n2. second prompt\n" in content
 
     def test_logs_prompt_mentioning_notification_tag(self):
