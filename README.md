@@ -17,7 +17,7 @@ Use `/dd-teach` to learn the process interactively, tailored to your experience 
 ### Prerequisites
 
 - Python 3.9+, on PATH as `python3`, `python` or (on Windows) the `py` launcher. The hooks use whichever one runs Python 3 ([ADR-0011](docs/decisions/0011-find-python-with-a-launcher-script.md)).
-- Git (or another supported VCS)
+- Git with a GitHub remote (or another supported VCS with a remote)
 - Claude Code 2.1.94 or later (earlier versions silently ignore hooks in a plugin skill's frontmatter)
 
 There are three installation methods depending on how you run Claude Code.

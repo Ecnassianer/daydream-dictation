@@ -2,7 +2,7 @@
 name: daydream-dictation
 description: Voice-driven document authoring using the Daydream Dictation workflow. Activates when the user is dictating design documents, mentions a Daydream project, refers to Prompts documents or dd-current-dictation-project, or starts a dictation session.
 license: MIT
-compatibility: Requires Python 3 and a supported VCS (git, Mercurial, Perforce or Unity Version Control). Prompt logging and commit checks use Claude Code skill hooks; other agents run the skill without them.
+compatibility: Requires Python 3 and a supported VCS with a remote (git with GitHub, Mercurial, Perforce or Unity Version Control). Prompt logging and commit checks use Claude Code skill hooks; other agents run the skill without them.
 metadata:
   version: "0.1.0"
 allowed-tools: Read Write Edit Bash Glob Grep
@@ -223,7 +223,7 @@ By default, project folders are created at the repo root. If a user wants all Da
 
 - `dd-current-dictation-project` points to nonexistent folder → run `dd_switch_project.py` with the correct slug
 - Prompts doc exists but `Daydream-<Slug>.md` or `TODO-<Slug>.md` missing → create missing files manually with matching header format
-- No git remote configured → stop hook will fail on push; help user set up remote
+- No git remote configured → stop hook will fail on push; help user set up a GitHub remote before continuing
 
 ## Clearing The Current Project
 
@@ -262,7 +262,7 @@ These are not created by `dd_init_project.py` — create them when a project nee
 ## Committing and Pushing
 
 - Commit after every set of changes with a clear, descriptive message
-- Push to the active branch immediately after committing
+- Push to the remote branch immediately after committing
 - Daydream doc and Prompts doc committed together when both change in the same turn
 - Prompt log entries belong in the same commit as the work they accompany
 - The Stop hook will warn if there are uncommitted or unpushed changes
@@ -307,11 +307,11 @@ When the user says "address the comments on the PR" or similar:
 
 ## Version Control
 
-Version control is **required**. The diff review phase depends on being able to see before/after. If the user doesn't have VCS set up, walk them through setting up Git before proceeding.
+Version control with a remote is **required**. The diff review phase depends on being able to see before/after in a pull request. If the user doesn't have VCS set up, walk them through setting up Git and a GitHub remote before proceeding.
 
 ### Supported VCS
 
-- `git` — full support; first-class default
+- `git` with a GitHub remote — full support; first-class default
 - `hg` — Mercurial
 - `perforce` (alias: `p4`) — Perforce
 - `unity-vcs` (alias: `plastic`) — Unity Version Control / Plastic SCM
@@ -321,7 +321,7 @@ Version control is **required**. The diff review phase depends on being able to 
 
 1. `.agents/dd-vcs` file (or the legacy `.claude/dd-vcs`) — user-supplied override
 2. Auto-detection: `.git/` → git; `.hg/` → hg; `.plastic/` → unity-vcs; `.p4config` or `P4CONFIG` env var → perforce
-3. Nothing detected → ask the user; if they don't know, walk them through setting up Git
+3. Nothing detected → ask the user; if they don't know, walk them through setting up Git and a GitHub remote
 
 ---
 
